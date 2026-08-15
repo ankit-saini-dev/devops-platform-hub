@@ -62,6 +62,7 @@ generating application code.
 
 - Product vision and MVP scope are documented in the README.
 - The initial modular-monolith architecture is documented.
+- The phased project roadmap is documented.
 - ADR 0001 records the modular-monolith decision.
 - ADR 0002 records PostgreSQL as the initial database.
 - ADR 0003 records Angular Material as the initial UI component library.
@@ -73,10 +74,8 @@ generating application code.
 
 ### Remaining Work
 
-- Finalize this project roadmap.
-- Add contribution guidance and practical pull request and issue templates.
-- Add baseline repository formatting and ignore rules.
-- Document Phase 1 development prerequisites and setup expectations.
+- Merge the contribution guidance, repository templates, formatting rules,
+  ignore rules, and Phase 1 setup expectations after review.
 - Create the detailed Phase 1 issues and acceptance criteria.
 - Review Phase 0 documentation for consistent scope and terminology.
 

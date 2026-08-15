@@ -68,8 +68,8 @@ The application will begin as a modular monolith with clear feature boundaries.
 This keeps local development and deployment manageable while allowing the
 system to evolve as real requirements emerge.
 
-Architecture decisions and their trade-offs will be recorded under
-[`docs/decisions`](docs/decisions) as the project progresses.
+Architecture decisions and their trade-offs are recorded under
+[`docs/decisions`](docs/decisions).
 
 ## Roadmap
 
@@ -81,8 +81,16 @@ Architecture decisions and their trade-offs will be recorded under
 6. Containers and observability
 7. Cloud and orchestration
 
-Detailed milestone planning will be maintained in
-[`docs/roadmap.md`](docs/roadmap.md) when that document is introduced.
+See the [project roadmap](docs/roadmap.md) for phase outcomes, boundaries, and
+progress.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Project roadmap](docs/roadmap.md)
+- [Development setup](docs/setup.md)
+- [Architecture decisions](docs/decisions)
+- [Contributing guide](CONTRIBUTING.md)
 
 ## Project principles
 
@@ -96,7 +104,7 @@ Detailed milestone planning will be maintained in
 
 ## Repository status
 
-Phase 0 is in progress. The product charter, architecture decisions,
+Phase 0 is in progress. The product charter, architecture decisions, roadmap,
 contribution workflow, and Phase 1 backlog are being established before
 application code is generated.
 
