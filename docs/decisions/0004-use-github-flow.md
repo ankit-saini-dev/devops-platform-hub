@@ -128,7 +128,7 @@ human reasoning about scope, architecture, security, or product behavior.
 
 The repository may use a merge commit or squash merge as long as the resulting
 history remains understandable and the selected method is applied consistently
-enough for contributors to follow it.
+enough for future review.
 
 Squash merge is preferred when a branch contains temporary correction commits
 that do not provide useful long-term history. A merge commit may be retained
@@ -240,9 +240,8 @@ into small issues and cohesive pull requests.
 - Required checks must be relevant, deterministic enough for normal use, and
   documented before enforcement.
 - GitHub repository settings affecting review, merging, security, and branch
-  deletion should be reviewed when the contributor model changes.
-- The pull request template and contribution guide should reflect this decision
-  when those files are introduced.
+  deletion should be reviewed if the maintainer or ownership model changes.
+- The pull request template should reflect this decision.
 - Documentation-only changes require appropriate document verification even
   when application tests are not applicable.
 - A change must not be described as committed, merged, deployed, or working
@@ -266,7 +265,7 @@ model, or operational risk changes materially. Relevant signals include:
 - Required automated checks become unreliable enough to block delivery and need
   redesign rather than routine bypassing.
 - Repository ownership moves to an organization with centrally managed
-  rulesets and contributor roles.
+  rulesets and maintainer roles.
 
 Reconsidering this decision may strengthen review or automation requirements
 without replacing GitHub Flow entirely.
