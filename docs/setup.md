@@ -134,5 +134,3 @@ connection strings.
 - [Architecture](architecture.md)
 - [Roadmap](roadmap.md)
 - [Architecture decisions](decisions)
-- [Contributing guide](../CONTRIBUTING.md)
-

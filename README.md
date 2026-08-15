@@ -90,7 +90,6 @@ progress.
 - [Project roadmap](docs/roadmap.md)
 - [Development setup](docs/setup.md)
 - [Architecture decisions](docs/decisions)
-- [Contributing guide](CONTRIBUTING.md)
 
 ## Project principles
 
@@ -105,7 +104,7 @@ progress.
 ## Repository status
 
 Phase 0 is in progress. The product charter, architecture decisions, roadmap,
-contribution workflow, and Phase 1 backlog are being established before
+repository workflow, and Phase 1 backlog are being established before
 application code is generated.
 
 ## License

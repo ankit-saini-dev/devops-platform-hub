@@ -55,7 +55,7 @@ generating application code.
 - Document system boundaries, module responsibilities, and dependency rules.
 - Record foundational architecture decisions.
 - Establish a protected, pull-request-based Git workflow.
-- Define repository contribution and documentation standards.
+- Define repository maintenance and documentation standards.
 - Create an ordered and testable Phase 1 backlog.
 
 ### Current Progress
@@ -74,16 +74,17 @@ generating application code.
 
 ### Remaining Work
 
-- Merge the contribution guidance, repository templates, formatting rules,
-  ignore rules, and Phase 1 setup expectations after review.
+- Merge the repository checklist, formatting rules, ignore rules, and Phase 1
+  setup expectations after review.
 - Create the detailed Phase 1 issues and acceptance criteria.
 - Review Phase 0 documentation for consistent scope and terminology.
 
 ### Exit Criteria
 
-- A new contributor can understand the product, scope, and planned architecture.
+- The maintainer and repository reviewers can understand the product, scope,
+  and planned architecture.
 - Foundational decisions have accepted ADRs with alternatives and consequences.
-- Repository workflow and contribution expectations are documented.
+- Repository workflow and maintenance expectations are documented.
 - Phase 1 work is divided into small issues with dependencies and verification
   steps.
 - All documentation links resolve.
