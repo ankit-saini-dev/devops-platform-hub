@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security reporting guidance
+    url: https://github.com/ankit-saini-dev/devops-platform-hub/security
+    about: Review the repository security page before sharing vulnerability details.
