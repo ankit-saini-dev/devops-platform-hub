@@ -4,11 +4,12 @@
 
 This document describes the planned initial architecture of DevOps Platform Hub.
 
-The project is currently in Phase 0. The components and technologies described
-here represent architectural decisions and planned implementation unless they
-are explicitly marked as implemented.
+The project is currently in Phase 1: Application Foundation. The components and
+technologies described here remain the accepted architectural direction and
+planned implementation unless they are explicitly marked as implemented.
 
-This document will evolve as requirements are validated through implementation.
+This document will evolve as requirements and architectural assumptions are
+validated through verified implementation evidence.
 
 ## Architectural Goals
 
