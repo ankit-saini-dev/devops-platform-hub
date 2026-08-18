@@ -103,9 +103,12 @@ progress.
 
 ## Repository status
 
-Phase 0 is in progress. The product charter, architecture decisions, roadmap,
-repository workflow, and Phase 1 backlog are being established before
-application code is generated.
+Phase 0 is complete. The product charter, architecture decisions, roadmap,
+repository workflow, and ordered Phase 1 backlog are established.
+
+Phase 1, Application Foundation, is now active. Angular and ASP.NET Core
+application code has not yet been introduced; implementation will proceed
+incrementally through the accepted GitHub issues.
 
 ## License
 

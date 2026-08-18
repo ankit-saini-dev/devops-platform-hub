@@ -4,9 +4,12 @@
 
 This roadmap describes the planned direction of DevOps Platform Hub.
 
-The project is currently in Phase 0. Items in later phases are proposals, not
-implemented features or guaranteed commitments. Scope and ordering may change
-when implementation, testing, security reviews, or user feedback provide new
+The project is currently in Phase 1: Application Foundation. Phase 1 work is
+planned and tracked through the ordered GitHub backlog below; its capabilities
+must not be treated as implemented until their acceptance criteria and
+verification steps pass. Items in future phases are proposals, not implemented
+features or guaranteed commitments. Scope and ordering may change when
+implementation, testing, security reviews, or user feedback provide new
 evidence.
 
 Progress will be reported from verified repository and runtime results. A phase
@@ -33,8 +36,8 @@ its acceptance criteria and applicable tests must also pass.
 
 | Phase | Outcome | Status |
 | --- | --- | --- |
-| Phase 0 | Product and repository foundation | In progress |
-| Phase 1 | Secure and testable application foundation | Planned |
+| Phase 0 | Product and repository foundation | Complete |
+| Phase 1 | Secure and testable application foundation | In progress |
 | Phase 2 | Project and environment management | Planned |
 | Phase 3 | Simulated build and deployment tracking | Planned |
 | Phase 4 | Real source-control and CI/CD integrations | Proposed |
@@ -58,7 +61,7 @@ generating application code.
 - Define repository maintenance and documentation standards.
 - Create an ordered and testable Phase 1 backlog.
 
-### Current Progress
+### Completed Work
 
 - Product vision and MVP scope are documented in the README.
 - The initial modular-monolith architecture is documented.
@@ -71,13 +74,11 @@ generating application code.
 - CodeQL default setup is enabled based on the confirmed repository settings.
 - Automatic deletion of merged remote branches is enabled based on the
   confirmed repository settings.
-
-### Remaining Work
-
-- Merge the repository checklist, formatting rules, ignore rules, and Phase 1
-  setup expectations after review.
-- Create the detailed Phase 1 issues and acceptance criteria.
-- Review Phase 0 documentation for consistent scope and terminology.
+- The pull-request checklist, formatting rules, ignore rules, and Phase 1 setup
+  expectations are documented.
+- The ordered Phase 1 milestone and issues define dependencies, acceptance
+  criteria, and verification steps.
+- Phase 0 documentation has been reviewed for consistent scope and terminology.
 
 ### Exit Criteria
 
@@ -121,6 +122,23 @@ features can be built.
 - Do not add real external integrations or cloud dependencies.
 - Do not describe authentication, health checks, logging, or CI as complete
   until their runtime behavior has been verified.
+
+### Ordered Backlog
+
+1. [Complete the Phase 0-to-Phase 1 transition](https://github.com/ankit-saini-dev/devops-platform-hub/issues/5)
+2. [Select supported tool versions and scaffold the ASP.NET Core backend](https://github.com/ankit-saini-dev/devops-platform-hub/issues/6)
+3. [Scaffold the Angular frontend with Angular Material](https://github.com/ankit-saini-dev/devops-platform-hub/issues/7)
+4. [Add initial continuous-integration checks](https://github.com/ankit-saini-dev/devops-platform-hub/issues/8)
+5. [Add PostgreSQL development infrastructure and persistence foundation](https://github.com/ankit-saini-dev/devops-platform-hub/issues/9)
+6. [Establish API validation, error handling, and structured logging](https://github.com/ankit-saini-dev/devops-platform-hub/issues/10)
+7. [Add liveness and PostgreSQL readiness health checks](https://github.com/ankit-saini-dev/devops-platform-hub/issues/11)
+8. [Implement local authentication and backend-enforced authorization](https://github.com/ankit-saini-dev/devops-platform-hub/issues/12)
+9. [Verify and document the complete Phase 1 developer experience](https://github.com/ankit-saini-dev/devops-platform-hub/issues/13)
+
+The [Phase 1 milestone](https://github.com/ankit-saini-dev/devops-platform-hub/milestone/1)
+groups these issues. Dependencies recorded in each issue determine implementation
+order; list position alone does not imply that unfinished dependencies may be
+skipped.
 
 ### Exit Criteria
 

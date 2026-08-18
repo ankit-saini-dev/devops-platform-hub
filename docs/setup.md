@@ -2,13 +2,14 @@
 
 ## Status
 
-DevOps Platform Hub is currently in Phase 0. Application source code, runtime
-services, database containers, and executable setup commands have not yet been
-introduced.
+DevOps Platform Hub is currently in Phase 1: Application Foundation.
+Application source code, runtime services, database containers, and executable
+setup commands have not yet been introduced.
 
 This document records the planned development prerequisites and setup standards.
-It will be updated with verified commands as each application component is
-created. Do not interpret a listed technology as an implemented dependency.
+It will be updated with exact verified commands as each Phase 1 issue introduces
+an application component or dependency. Do not interpret a listed technology as
+an implemented dependency.
 
 ## Supported Development Environment
 
@@ -105,7 +106,8 @@ reported as successful before it has been executed.
 
 ## Current Verification
 
-At Phase 0, verify documentation changes by checking:
+During the documentation-only Phase 0-to-Phase 1 transition, verify changes by
+checking:
 
 - Markdown renders clearly.
 - Relative links resolve.
