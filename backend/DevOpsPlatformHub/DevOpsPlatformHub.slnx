@@ -1,0 +1,5 @@
+<Solution>
+    <Project Path="DevOpsPlatformHub.Api/DevOpsPlatformHub.Api.csproj" />
+    <Project Path="DevOpsPlatformHub.IntegrationTests/DevOpsPlatformHub.IntegrationTests.csproj" />
+    <Project Path="DevOpsPlatformHub.UnitTests/DevOpsPlatformHub.UnitTests.csproj" />
+</Solution>
