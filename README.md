@@ -8,8 +8,8 @@ The project is being developed incrementally as a practical exploration of
 software architecture, DevOps, platform engineering, security, testing, and
 observability.
 
-> Status: Product and repository foundation. Application development has not
-> started.
+> Status: Phase 1 application foundation. The initial ASP.NET Core backend host
+> and automated startup test are implemented; product features have not started.
 
 ## Why this project exists
 
@@ -106,9 +106,11 @@ progress.
 Phase 0 is complete. The product charter, architecture decisions, roadmap,
 repository workflow, and ordered Phase 1 backlog are established.
 
-Phase 1, Application Foundation, is now active. Angular and ASP.NET Core
-application code has not yet been introduced; implementation will proceed
-incrementally through the accepted GitHub issues.
+Phase 1, Application Foundation, is active. The initial ASP.NET Core backend
+host, backend test-project structure, and first startup smoke test are being
+established through the accepted GitHub issues. Angular, PostgreSQL,
+authentication, health endpoints, and product capabilities have not yet been
+implemented.
 
 ## License
 

@@ -8,6 +8,16 @@ The project is currently in Phase 1: Application Foundation. The components and
 technologies described here remain the accepted architectural direction and
 planned implementation unless they are explicitly marked as implemented.
 
+The initial ASP.NET Core Web API host, backend solution, .NET SDK policy, and
+unit and integration test projects have been introduced during Phase 1. The
+integration-test project contains a startup smoke test that boots the assembled
+API in memory and verifies the development OpenAPI document can be served as
+JSON. The unit-test project remains empty because no business rules exist yet.
+
+Feature modules, persistence, background execution, authentication, health
+endpoints, and product endpoints remain planned. The startup test verifies the
+current application host, not those future capabilities.
+
 This document will evolve as requirements and architectural assumptions are
 validated through verified implementation evidence.
 
