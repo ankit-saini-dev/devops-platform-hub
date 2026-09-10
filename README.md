@@ -9,7 +9,9 @@ software architecture, DevOps, platform engineering, security, testing, and
 observability.
 
 > Status: Phase 1 application foundation. The initial ASP.NET Core backend host
-> and automated startup test are implemented; product features have not started.
+> and automated startup test are implemented. The frontend foundation branch
+> contains the Angular Material shell and its local quality checks; product
+> features have not started.
 
 ## Why this project exists
 
@@ -107,10 +109,12 @@ Phase 0 is complete. The product charter, architecture decisions, roadmap,
 repository workflow, and ordered Phase 1 backlog are established.
 
 Phase 1, Application Foundation, is active. The initial ASP.NET Core backend
-host, backend test-project structure, and first startup smoke test are being
-established through the accepted GitHub issues. Angular, PostgreSQL,
-authentication, health endpoints, and product capabilities have not yet been
-implemented.
+host, backend test-project structure, and first startup smoke test are implemented.
+The frontend foundation branch adds an Angular Material shell displaying
+"DevOps Platform", component tests, ESLint, and Prettier under
+`ui/devops-platform-hub-ui`. See the [frontend setup](ui/devops-platform-hub-ui/README.md).
+Issue #7 is implemented on its feature branch and awaits pull-request review.
+PostgreSQL, authentication, health endpoints, and product capabilities remain planned.
 
 ## License
 
