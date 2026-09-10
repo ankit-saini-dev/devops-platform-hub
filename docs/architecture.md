@@ -14,6 +14,13 @@ integration-test project contains a startup smoke test that boots the assembled
 API in memory and verifies the development OpenAPI document can be served as
 JSON. The unit-test project remains empty because no business rules exist yet.
 
+The frontend foundation branch contains a standalone Angular application under
+`ui/devops-platform-hub-ui`. Its root component composes a Material toolbar,
+an application heading, and a main-content area containing the router outlet.
+The route list is empty. Material supplies the Azure/Blue theme and components;
+SCSS supplies application layout. ESLint checks TypeScript and templates, and
+Prettier formats source files. This shell does not yet communicate with the API.
+
 Feature modules, persistence, background execution, authentication, health
 endpoints, and product endpoints remain planned. The startup test verifies the
 current application host, not those future capabilities.

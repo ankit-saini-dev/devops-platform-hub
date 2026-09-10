@@ -5,12 +5,12 @@
 DevOps Platform Hub is currently in Phase 1: Application Foundation.
 The initial ASP.NET Core Web API host, backend solution, SDK policy, unit-test
 project, integration-test project, and startup smoke test have been introduced
-on the current backend foundation branch.
+and are part of the backend foundation.
 
-Angular, PostgreSQL, database migrations, authentication, health endpoints, and
-product modules have not yet been implemented. This document distinguishes
-verified backend commands and tests from planned setup that has no
-implementation yet.
+The frontend foundation branch adds the Angular Material shell, component
+tests, linting, and formatting. PostgreSQL, database migrations, authentication,
+health endpoints, and product modules remain planned. Local checks do not
+constitute completed CI or clean-checkout validation.
 
 ## Supported Development Environment
 
@@ -38,8 +38,7 @@ policy, and rejects preview SDKs.
 
 The following planned tools are not current backend prerequisites:
 
-- A supported Node.js release, package manager, and Angular CLI for the future
-  Angular application.
+- Node.js and npm for the Angular application, as described below.
 - Docker Desktop or a compatible Docker Engine when PostgreSQL is introduced.
 
 Exact versions for planned tools will be selected and verified from official
@@ -57,8 +56,41 @@ The current repository setup flow is:
 6. Run the automated backend tests.
 7. Start the API when manual runtime verification is required.
 
-Frontend dependencies, local services, configuration examples, and database
-migrations will be added to this flow only after their implementations exist.
+For the frontend, follow the independent setup below. Local services,
+configuration examples, and database migrations remain deferred.
+
+## Frontend Setup
+
+The frontend lives in `ui/devops-platform-hub-ui`. The current machine reports
+Node.js `24.21.0` and npm `11.19.0`; installed Angular is `22.1.6`, Angular CLI
+is `22.1.7`, Angular Material/CDK are `22.1.6`, and TypeScript is `6.0.3`.
+The package lock records the resolved dependency tree. `package.json` supports
+Node.js 24 and npm 11, while `packageManager` records npm 11.19.0 as the package
+manager version used for this foundation.
+
+Run in PowerShell from the repository root, stopping if a command fails:
+
+```powershell
+cd ui\devops-platform-hub-ui
+npm.cmd ci
+npm.cmd run build
+npm.cmd test -- --watch=false
+npm.cmd run format:check
+npm.cmd start
+```
+
+Open `http://localhost:4200/` to inspect the shell. Stop the server with `Ctrl+C`.
+The shell does not request Google Fonts or Material Icons. An install-script
+policy warning from npm should be evaluated separately from installation, build,
+or test errors.
+
+Local verification passed the source lint/format check, production build, and
+two component tests. Browser inspection at 1280px and 375px widths showed no
+horizontal overflow or captured console warnings/errors. The maintainer also
+completed a clean `npm ci` installation with zero reported vulnerabilities.
+These are local results; no fresh repository checkout or frontend CI run is
+claimed. See the [frontend README](../ui/devops-platform-hub-ui/README.md) for
+lint and format behavior and source-control boundaries.
 
 ## Backend Structure
 
