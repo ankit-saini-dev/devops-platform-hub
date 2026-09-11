@@ -1,0 +1,68 @@
+name: Continuous Integration
+
+on:
+    pull_request:
+        branches:
+            - main
+
+permissions:
+    contents: read
+
+jobs:
+    backend:
+        name: Backend
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: backend/DevOpsPlatformHub
+
+        steps:
+            - name: check out source
+              uses: actions/checkout@v6
+
+            - name: Set up .NET
+              uses: actions/setup-dotnet@v5
+              with:
+                global-json-file: backend/DevOpsPlatformHub/global.json
+
+            - name: Restore dependencies
+              run: dotnet restore DevOpsPlatformHub.slnx
+
+            - name: Build
+              run: dotnet build DevOpsPlatformHub.slnx --no-restore
+
+            - name: Test
+              run: dotnet test DevOpsPlatformHub.slnx --no-build --no-restore
+
+    frontend:
+        name: Frontend
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ui/devops-platform-hub-ui
+
+        steps:
+            - name: check out source
+              uses: actions/checkout@v6
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v7
+              with:
+                node-version: 24
+                cache: npm
+                cache-dependency-path: ui/devops-platform-hub-ui/package-lock.json
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Build
+              run: npm run build
+
+            - name: Run tests
+              run: npm test -- --watch=false
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Check formatting
+              run: npx prettier src --check
