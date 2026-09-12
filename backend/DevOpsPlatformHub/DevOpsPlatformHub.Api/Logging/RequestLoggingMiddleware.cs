@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using DevOpsPlatformHub.Infrastructure.Logging;
 
 namespace DevOpsPlatformHub.Api.Logging;
 
@@ -14,13 +15,16 @@ public sealed class RequestLoggingMiddleware(RequestDelegate next, ILogger<Reque
         finally
         {
             stopwatch.Stop();
-            logger.LogInformation(
-                "Http request completed. {RequestMethod} {RequestPath} {StatusCode} {ElapsedMilliseconds} {TraceId}",
-                LogValueSanitizer.Sanitize(httpContext.Request.Method),
-                LogValueSanitizer.Sanitize(httpContext.Request.Path),
-                httpContext.Response.StatusCode,
-                stopwatch.ElapsedMilliseconds,
-                httpContext.TraceIdentifier);
+            if (!httpContext.Request.Path.StartsWithSegments("/health"))
+            {
+                logger.LogInformation(
+                    "Http request completed. {RequestMethod} {RequestPath} {StatusCode} {ElapsedMilliseconds} {TraceId}",
+                    LogSanitizer.SanitizeValue(httpContext.Request.Method),
+                    LogSanitizer.SanitizeValue(httpContext.Request.Path.Value ?? string.Empty),
+                    httpContext.Response.StatusCode,
+                    stopwatch.ElapsedMilliseconds,
+                    httpContext.TraceIdentifier);
+            }
         }
     }
 }

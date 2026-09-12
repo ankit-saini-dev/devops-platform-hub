@@ -2,8 +2,9 @@
 
 ## Status
 
-The API foundation implements shared error handling and structured request
-logging. Product endpoints, authentication, and API versioning remain planned.
+The API foundation implements shared error handling, structured request logging,
+and health endpoints. Product endpoints, authentication, and API versioning
+remain planned.
 
 ## Error Responses
 
@@ -31,9 +32,25 @@ Future application use cases must express expected outcomes with the matching
 application exception. They must not throw generic .NET exceptions to represent
 ordinary validation, missing-resource, or conflict behavior.
 
+## Health Endpoints
+
+Health endpoints are unauthenticated operational endpoints. They return plain
+text health status and do not return connection strings, credentials, exception
+messages, or stack traces.
+
+| Endpoint | Meaning | Healthy response | Unhealthy response |
+|---|---|---:|---:|
+| `GET /health/live` | The API process can accept requests. It does not check PostgreSQL. | `200 Healthy` | Not applicable while the process is running. |
+| `GET /health/ready` | The API can open a PostgreSQL connection and execute `SELECT 1`. | `200 Healthy` | `503 Unhealthy` when PostgreSQL configuration is missing or the database cannot be used. |
+
+Liveness is suitable for determining whether an API process should be restarted.
+Readiness is suitable for determining whether the API should receive traffic
+that depends on PostgreSQL. The endpoints do not replace future monitoring,
+metrics, alerting, or deployment-health policies.
+
 ## Logging
 
-Every request records these structured fields at information level:
+Every non-health request records these structured fields at information level:
 
 - `RequestMethod`
 - `RequestPath`
@@ -41,11 +58,21 @@ Every request records these structured fields at information level:
 - `ElapsedMilliseconds`
 - `TraceId`
 
-Failures also record the safe error code, exception type, stack-trace location,
-and trace ID at error level. The request logger must not record request or
-response bodies, headers, query strings, passwords, tokens, or connection
-strings. It removes carriage-return and line-feed characters from request
-method and path values before logging them to prevent forged log entries.
+The request logger excludes `/health/*` probes because infrastructure polling
+would otherwise create routine log noise.
+
+Unhandled API failures record the error code, trace ID, exception type,
+redacted exception message, stack trace, and inner-exception details at error
+level. The PostgreSQL readiness check records equivalent redacted diagnostic
+details when it converts a database failure to `503 Unhealthy`. Client
+responses remain generic in both cases.
+
+The logging sanitizer removes carriage-return and line-feed characters from
+request values and redacts common password, token, authorization, and
+PostgreSQL URI credential patterns from exception details. It must not log
+request or response bodies, headers, query strings, passwords, tokens, or
+connection strings. Production log access must remain restricted; application
+redaction reduces risk but does not replace operational access controls.
 
 Console logs use JSON formatting so local and future centralized logging tools
 can query the named fields.
