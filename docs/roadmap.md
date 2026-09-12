@@ -123,6 +123,14 @@ features can be built.
 - Do not describe authentication, health checks, logging, or CI as complete
   until their runtime behavior has been verified.
 
+### Completed Work
+
+- Issue [#11](https://github.com/ankit-saini-dev/devops-platform-hub/issues/11)
+  is complete and was merged in pull request
+  [#20](https://github.com/ankit-saini-dev/devops-platform-hub/pull/20). The
+  API exposes liveness and PostgreSQL readiness checks, with automated and
+  local Docker lifecycle verification.
+
 ### Ordered Backlog
 
 1. [Complete the Phase 0-to-Phase 1 transition](https://github.com/ankit-saini-dev/devops-platform-hub/issues/5)
