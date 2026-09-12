@@ -31,8 +31,9 @@ features from becoming coupled through direct table access.
 DevOps Platform Hub will use PostgreSQL as its initial relational database.
 
 The ASP.NET Core backend will access PostgreSQL through Entity Framework Core
-and its PostgreSQL provider. Database schema changes will be managed through
-version-controlled Entity Framework Core migrations.
+and its PostgreSQL provider for application reads and writes. Database schema
+changes will be managed through version-controlled Flyway SQL migrations; .NET
+and Entity Framework Core migrations will not be used.
 
 The initial modular monolith will use one PostgreSQL database. Modules will own
 their persistence behavior and must not depend directly on another module's
@@ -40,11 +41,11 @@ internal tables merely because the tables share a database. The physical
 schema organization and exact enforcement mechanism will be decided when the
 persistence structure is implemented.
 
-PostgreSQL will initially run as a local development dependency. Docker Compose
-is the planned method for providing a reproducible local database after Docker
-is introduced in Phase 1. Credentials and connection strings containing
-secrets will be supplied through configuration and will not be committed to
-source control.
+PostgreSQL runs as a local development dependency through Docker Compose.
+Credentials are supplied through an ignored `.env` file, while `.env.example`
+contains placeholders only. Flyway runs against the Compose service to apply
+and validate migrations. Connection strings containing secrets will not be
+committed to source control.
 
 Production hosting, backup, high availability, replication, and managed
 database services are not selected by this decision. Those choices depend on a
@@ -126,7 +127,8 @@ advance.
 - A shared database can weaken module boundaries if features access each
   other's tables directly.
 - Database migrations require review and coordination because the backend is
-  deployed as one application.
+  deployed as one application. Flyway versioned migrations are immutable once
+  shared, and schema delivery remains independent of backend deployment.
 
 ## Implementation Constraints
 

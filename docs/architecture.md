@@ -21,9 +21,12 @@ The route list is empty. Material supplies the Azure/Blue theme and components;
 SCSS supplies application layout. ESLint checks TypeScript and templates, and
 Prettier formats source files. This shell does not yet communicate with the API.
 
-Feature modules, persistence, background execution, authentication, health
-endpoints, and product endpoints remain planned. The startup test verifies the
-current application host, not those future capabilities.
+Feature modules, runtime persistence behavior, background execution,
+authentication, health endpoints, and product endpoints remain planned. The
+local PostgreSQL and Flyway foundation is implemented: versioned SQL owns
+schema changes, while Entity Framework Core is reserved for future application
+data access. The startup test verifies the current application host, not those
+future capabilities.
 
 This document will evolve as requirements and architectural assumptions are
 validated through verified implementation evidence.
@@ -180,12 +183,14 @@ data directly.
 
 ### Persistence
 
-Entity Framework Core will map domain data to PostgreSQL and manage database
-migrations. Database access should remain behind module-owned application
-boundaries. A generic repository abstraction will not be introduced initially
-because EF Core already provides unit-of-work and collection-like persistence
-behavior. More specialized abstractions may be added when they protect a real
-domain boundary or improve testability.
+Entity Framework Core will map domain data to PostgreSQL for application
+reads and writes. Flyway owns versioned SQL schema changes from the repository
+root `database/` directory; .NET and EF Core migrations are not used. Database
+access should remain behind module-owned application boundaries. A generic
+repository abstraction will not be introduced initially because EF Core already
+provides unit-of-work and collection-like persistence behavior. More specialized
+abstractions may be added when they protect a real domain boundary or improve
+testability.
 
 ### Background execution
 
