@@ -1,68 +1,119 @@
 name: Continuous Integration
 
 on:
-    pull_request:
-        branches:
-            - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
     contents: read
 
 jobs:
-    backend:
-        name: Backend
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: backend/DevOpsPlatformHub
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/DevOpsPlatformHub
 
-        steps:
-            - name: check out source
-              uses: actions/checkout@v6
+    steps:
+      - name: check out source
+        uses: actions/checkout@v6
 
-            - name: Set up .NET
-              uses: actions/setup-dotnet@v5
-              with:
-                global-json-file: backend/DevOpsPlatformHub/global.json
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: backend/DevOpsPlatformHub/global.json
 
-            - name: Restore dependencies
-              run: dotnet restore DevOpsPlatformHub.slnx
+      - name: Restore dependencies
+        run: dotnet restore DevOpsPlatformHub.slnx
 
-            - name: Build
-              run: dotnet build DevOpsPlatformHub.slnx --no-restore
+      - name: Build
+        run: dotnet build DevOpsPlatformHub.slnx --no-restore
 
-            - name: Test
-              run: dotnet test DevOpsPlatformHub.slnx --no-build --no-restore
+      - name: Test
+        run: dotnet test DevOpsPlatformHub.slnx --no-build --no-restore
 
-    frontend:
-        name: Frontend
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ui/devops-platform-hub-ui
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui/devops-platform-hub-ui
 
-        steps:
-            - name: check out source
-              uses: actions/checkout@v6
+    steps:
+      - name: check out source
+        uses: actions/checkout@v6
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v7
-              with:
-                node-version: 24
-                cache: npm
-                cache-dependency-path: ui/devops-platform-hub-ui/package-lock.json
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/devops-platform-hub-ui/package-lock.json
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: Build
-              run: npm run build
+      - name: Build
+        run: npm run build
 
-            - name: Run tests
-              run: npm test -- --watch=false
+      - name: Run tests
+        run: npm test -- --watch=false
 
-            - name: Lint
-              run: npm run lint
+      - name: Lint
+        run: npm run lint
 
-            - name: Check formatting
-              run: npx prettier src --check
+      - name: Check formatting
+        run: npx prettier src --check
+
+  database:
+    name: Database
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18.6-bookworm
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: devops_platform_hub
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d devops_platform_hub"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: check out source
+        uses: actions/checkout@v6
+
+      - name: Apply database migrations
+        run: |
+          docker run --rm --network host \
+            -v "$GITHUB_WORKSPACE/database/migrations:/flyway/sql:ro" \
+            -v "$GITHUB_WORKSPACE/database/flyway.conf:/flyway/conf/flyway.conf:ro" \
+            -e FLYWAY_URL="jdbc:postgresql://localhost:5432/devops_platform_hub" \
+            -e FLYWAY_USER="postgres" \
+            -e FLYWAY_PASSWORD="postgres" \
+            redgate/flyway:13.6 migrate
+
+      - name: Validate database migrations
+        run: |
+          docker run --rm --network host \
+          -v "$GITHUB_WORKSPACE/database/migrations:/flyway/sql:ro" \
+          -v "$GITHUB_WORKSPACE/database/flyway.conf:/flyway/conf/flyway.conf:ro" \
+          -e FLYWAY_URL="jdbc:postgresql://localhost:5432/devops_platform_hub" \
+          -e FLYWAY_USER="postgres" \
+          -e FLYWAY_PASSWORD="postgres" \
+          redgate/flyway:13.6 validate
+
+      - name: Run PostgreSQL relational smoke test
+        run: |
+          docker run --rm --network host \
+          -v "$GITHUB_WORKSPACE/database/tests:/tests:ro" \
+          -e PGPASSWORD="postgres" \
+          postgres:18.6-bookworm \
+          psql --host=localhost --username=postgres \
+          --dbname=devops_platform_hub --file=/tests/postgresql_relational_smoke.sql

@@ -2,15 +2,17 @@
 
 ## Status
 
-DevOps Platform Hub is currently in Phase 1: Application Foundation.
-The initial ASP.NET Core Web API host, backend solution, SDK policy, unit-test
-project, integration-test project, and startup smoke test have been introduced
-and are part of the backend foundation.
+DevOps Platform Hub is currently in Phase 1: Application Foundation. The
+backend host, modular backend project structure, startup smoke test, Angular
+Material frontend foundation, and initial backend/frontend CI checks are in
+place.
 
-The frontend foundation branch adds the Angular Material shell, component
-tests, linting, and formatting. PostgreSQL, database migrations, authentication,
-health endpoints, and product modules remain planned. Local checks do not
-constitute completed CI or clean-checkout validation.
+PostgreSQL 18.6 now runs locally through Docker Compose. Flyway applies and
+validates versioned SQL migrations, and a relational smoke test verifies the
+resulting database state. Authentication, health endpoints, runtime persistence
+behavior, and product modules remain planned. The Database CI job is configured
+on the current feature branch but is not described as verified until its pull
+request run succeeds.
 
 ## Supported Development Environment
 
@@ -31,15 +33,16 @@ The implemented backend foundation currently requires:
 - .NET SDK `10.0.400` or a compatible later patch in the same SDK feature band
   for the ASP.NET Core backend.
 - A code editor or IDE with C#, TypeScript, and EditorConfig support.
+- Docker Desktop with Docker Compose v2 for the local PostgreSQL and Flyway
+  workflow.
 
 The backend targets `net10.0`. The backend `global.json` selects SDK
 `10.0.400`, permits compatible updates through the `latestPatch` roll-forward
 policy, and rejects preview SDKs.
 
-The following planned tools are not current backend prerequisites:
+The following tools are also required when working on the frontend:
 
-- Node.js and npm for the Angular application, as described below.
-- Docker Desktop or a compatible Docker Engine when PostgreSQL is introduced.
+- Node.js and npm, as described below.
 
 Exact versions for planned tools will be selected and verified from official
 documentation when their implementing issue begins.
@@ -56,8 +59,8 @@ The current repository setup flow is:
 6. Run the automated backend tests.
 7. Start the API when manual runtime verification is required.
 
-For the frontend, follow the independent setup below. Local services,
-configuration examples, and database migrations remain deferred.
+For the frontend, follow the independent setup below. For PostgreSQL and
+versioned database migrations, follow the local database workflow below.
 
 ## Frontend Setup
 
@@ -100,6 +103,9 @@ backend/
     |-- global.json
     |-- DevOpsPlatformHub.slnx
     |-- DevOpsPlatformHub.Api/
+    |-- DevOpsPlatformHub.Application/
+    |-- DevOpsPlatformHub.Domain/
+    |-- DevOpsPlatformHub.Infrastructure/
     |-- DevOpsPlatformHub.UnitTests/
     `-- DevOpsPlatformHub.IntegrationTests/
 ```
@@ -108,6 +114,12 @@ backend/
 - `DevOpsPlatformHub.slnx` groups the backend projects for restore, build, and
   test commands.
 - `DevOpsPlatformHub.Api` is the deployable ASP.NET Core Web API host.
+- `DevOpsPlatformHub.Application` will contain use cases and application
+  contracts.
+- `DevOpsPlatformHub.Domain` will contain entities, value objects, and domain
+  rules.
+- `DevOpsPlatformHub.Infrastructure` contains runtime technical integrations,
+  including the selected PostgreSQL EF Core provider for future data access.
 - `DevOpsPlatformHub.UnitTests` is reserved for isolated business-rule tests.
 - `DevOpsPlatformHub.IntegrationTests` is reserved for assembled API and
   infrastructure tests and currently contains the startup smoke test.
@@ -154,34 +166,52 @@ The startup smoke test uses ASP.NET Core's in-memory test server, so it does not
 open port `5164` or verify Kestrel, TLS certificates, or a deployed environment.
 Those concerns require separate runtime and deployment verification.
 
+## Local PostgreSQL and Flyway
+
+The root `docker-compose.yaml` starts PostgreSQL 18.6 and exposes it on the
+port defined by the ignored root `.env` file. Copy `.env.example` to `.env`,
+choose a local password, and do not commit `.env`.
+
+Run these commands in Windows PowerShell from the repository root:
+
+```powershell
+Copy-Item .env.example .env
+docker compose up -d
+docker compose ps
+
+docker compose --profile database-tools run --rm flyway migrate
+docker compose --profile database-tools run --rm flyway validate
+
+Get-Content database\tests\postgresql_relational_smoke.sql |
+  docker compose exec -T postgres psql -U devops_platform -d devops_platform_hub
+```
+
+The Compose health check waits until PostgreSQL accepts connections. The
+`database-tools` profile keeps Flyway from starting during ordinary
+`docker compose up -d` usage. `migrate` applies immutable versioned SQL files,
+`validate` checks their recorded checksums, and the relational smoke test
+verifies the resulting schema before rolling back its temporary test data.
+
+If a disposable local database must be recreated after changing its initial
+database name, username, or password, run `docker compose down -v` and then
+`docker compose up -d`. This removes the local PostgreSQL volume and all its
+data.
+
+The API does not yet connect to PostgreSQL because no application entity or
+runtime persistence use case exists. When one is introduced, keep its local
+connection string in .NET user secrets or environment variables, never in a
+tracked settings file.
+
 ## Configuration and Secrets
 
 - Real secrets must never be committed.
-- `.env.example` will be introduced when environment-based configuration first
-  exists and will contain placeholders only.
+- `.env.example` contains placeholders only; `.env` is local and ignored.
 - Developer-specific configuration files must remain ignored unless they are
   explicitly safe examples.
-- Logs, screenshots, test output, and issue reports must be reviewed for secrets
-  before sharing.
+- Logs, screenshots, test output, and issue reports must be reviewed for
+  secrets before sharing.
 - Integration tokens must use least privilege and remain separate from ordinary
   project and environment metadata.
-
-The API's committed configuration currently contains logging levels and allowed
-host configuration only. The repository does not require an `.env` file,
-database credentials, tokens, or another local secret for the backend
-foundation.
-
-## Planned Local Services
-
-PostgreSQL is the selected initial relational database. Docker Compose is the
-planned local delivery mechanism after database persistence is introduced.
-
-No database container, port, username, password, volume, or connection string
-has been finalized. Those values will be documented only after the Compose and
-application configuration have been implemented and tested together.
-
-Later services must not be added to local setup until an implemented workflow
-requires them.
 
 ## Verification Standards
 
@@ -225,6 +255,11 @@ The current backend foundation has been verified on Windows with PowerShell:
   `application/json` media type.
 - The unit-test project reports that no tests are available because business
   logic has not yet been introduced; no unit-test coverage is claimed.
+- Docker Compose starts a healthy PostgreSQL 18.6 development container.
+- Flyway successfully applies and validates the initial `platform` schema
+  migration.
+- The PostgreSQL relational smoke test completes successfully and rolls back
+  its temporary test data.
 
 These results verify the current developer machine and branch. Clean-checkout
 reproduction and CI verification remain pending.

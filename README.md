@@ -8,9 +8,9 @@ The project is being developed incrementally as a practical exploration of
 software architecture, DevOps, platform engineering, security, testing, and
 observability.
 
-> Status: Phase 1 application foundation. The initial ASP.NET Core backend host
-> and automated startup test are implemented. The frontend foundation branch
-> contains the Angular Material shell and its local quality checks; product
+> Status: Phase 1 application foundation. The ASP.NET Core backend host,
+> modular backend project structure, Angular Material shell, initial CI checks,
+> and local PostgreSQL/Flyway database foundation are implemented. Product
 > features have not started.
 
 ## Why this project exists
@@ -108,13 +108,12 @@ progress.
 Phase 0 is complete. The product charter, architecture decisions, roadmap,
 repository workflow, and ordered Phase 1 backlog are established.
 
-Phase 1, Application Foundation, is active. The initial ASP.NET Core backend
-host, backend test-project structure, and first startup smoke test are implemented.
-The frontend foundation branch adds an Angular Material shell displaying
-"DevOps Platform", component tests, ESLint, and Prettier under
-`ui/devops-platform-hub-ui`. See the [frontend setup](ui/devops-platform-hub-ui/README.md).
-Issue #7 is implemented on its feature branch and awaits pull-request review.
-PostgreSQL, authentication, health endpoints, and product capabilities remain planned.
+Phase 1, Application Foundation, is active. The backend host, modular backend
+project structure, backend test foundation, Angular Material shell, and initial
+backend/frontend CI checks are implemented. Local PostgreSQL 18.6 runs through
+Docker Compose; Flyway applies and validates versioned SQL migrations, and a
+PostgreSQL smoke test verifies the resulting schema. Authentication, health
+endpoints, and product capabilities remain planned.
 
 ## License
 
