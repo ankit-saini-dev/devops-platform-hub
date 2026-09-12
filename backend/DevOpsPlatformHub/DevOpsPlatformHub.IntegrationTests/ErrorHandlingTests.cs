@@ -7,7 +7,7 @@ namespace DevOpsPlatformHub.IntegrationTests;
 /// <summary>
 /// Verifies the HTTP error responses and request logging produced by the test host's middleware pipeline.
 /// </summary>
-public class ErrorHandlingTests(ErrorHandlingFixture fixture) : IClassFixture<ErrorHandlingFixture>
+public sealed class ErrorHandlingTests(ErrorHandlingFixture fixture) : IClassFixture<ErrorHandlingFixture>
 {
     /// <summary>
     /// Returns validation problem details when the request fails input validation.
@@ -87,8 +87,15 @@ public class ErrorHandlingTests(ErrorHandlingFixture fixture) : IClassFixture<Er
         Assert.Equal("unexpected_error", document.RootElement.GetProperty("code").GetString());
         Assert.DoesNotContain("do-not-return-or-log-this-secret-value", body);
         Assert.DoesNotContain("InvalidOperationException", body);
-        Assert.DoesNotContain(fixture.LogProvider.Entries,
-            entry => entry.Properties.Any(property => property.Value?.ToString() == "do-not-return-or-log-this-secret-value"));
+
+        var errorLog = Assert.Single(fixture.LogProvider.Entries,
+            entry => entry.CategoryName.EndsWith("GlobalExceptionHandler") && entry.LogLevel == LogLevel.Error);
+        var exceptionDetails = Assert.Single(errorLog.Properties,
+            property => property.Key == "ExceptionDetails").Value;
+        var serializedExceptionDetails = JsonSerializer.Serialize(exceptionDetails);
+
+        Assert.DoesNotContain("do-not-return-or-log-this-secret-value", serializedExceptionDetails);
+        Assert.Contains("[REDACTED]", serializedExceptionDetails);
         Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
     }
 
@@ -116,5 +123,24 @@ public class ErrorHandlingTests(ErrorHandlingFixture fixture) : IClassFixture<Er
         Assert.Contains(requestLog.Properties, property => property.Key == "ElapsedMilliseconds");
         Assert.Contains(requestLog.Properties, property => property.Key == "TraceId");
         Assert.DoesNotContain(fixture.LogProvider.Entries, entry => entry.LogLevel == LogLevel.Error);
+    }
+
+    /// <summary>
+    /// Does not create a request log entry for the liveness endpoint, which is excluded from
+    /// application request logging.
+    /// </summary>
+    [Fact]
+    public async Task GetLiveness_WhenHealthEndpointIsCalled_DoesNotWriteRequestLog()
+    {
+        // Arrange
+        fixture.ClearLogs();
+
+        // Act
+        using var response = await fixture.HttpClient.GetAsync("/health/live");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.DoesNotContain(fixture.LogProvider.Entries,
+            entry => entry.CategoryName.EndsWith("RequestLoggingMiddleware"));
     }
 }

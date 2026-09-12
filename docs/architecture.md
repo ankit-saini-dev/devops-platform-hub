@@ -24,11 +24,12 @@ SCSS supplies application layout. ESLint checks TypeScript and templates, and
 Prettier formats source files. This shell does not yet communicate with the API.
 
 Feature modules, runtime persistence behavior, background execution,
-authentication, health endpoints, and product endpoints remain planned. The
-local PostgreSQL and Flyway foundation is implemented: versioned SQL owns
-schema changes, while Entity Framework Core is reserved for future application
-data access. The startup test verifies the current application host, not those
-future capabilities.
+authentication, and product endpoints remain planned. The API exposes liveness
+and PostgreSQL readiness endpoints. The local PostgreSQL and Flyway foundation
+is implemented: versioned SQL owns schema changes, while Entity Framework Core
+is reserved for future application data access. The readiness check is the only
+current runtime PostgreSQL use; it verifies connectivity without introducing
+entities or persistence behavior.
 
 This document will evolve as requirements and architectural assumptions are
 validated through verified implementation evidence.
@@ -171,6 +172,13 @@ justifies them.
 - Maps application failures to documented HTTP Problem Details responses.
 - Logs request method, route path, status code, duration, and trace ID without
   logging request bodies, headers, query strings, or response bodies.
+- Exposes `/health/live` for process liveness and `/health/ready` for
+  PostgreSQL readiness. Health probes are excluded from request-access logs.
+
+The API composition root registers the PostgreSQL readiness implementation. The
+implementation remains in Infrastructure because it depends on Npgsql and
+executes a database command. Missing or unavailable PostgreSQL is converted to
+a controlled readiness result rather than an unhandled API exception.
 
 Controllers should remain thin. They may coordinate request and response
 concerns but should not contain business rules.
@@ -265,6 +273,9 @@ updates provide a demonstrated usability benefit.
   module's internal database implementation directly.
 - Infrastructure code may implement contracts defined by the application, but
   domain behavior must not depend on provider SDKs.
+- Infrastructure may provide technical health checks and log-sanitization
+  utilities used by the API composition root. Those utilities must not contain
+  domain or product behavior.
 - External provider responses must be translated into application-owned models.
 - Cross-module dependencies must be intentional and should not form cycles.
 - Shared code should contain genuinely common technical behavior, not become a

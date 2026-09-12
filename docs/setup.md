@@ -7,16 +7,17 @@ backend host, modular backend project structure, startup smoke test, Angular
 Material frontend foundation, and initial backend/frontend CI checks are in
 place.
 
-The API foundation also provides standardized Problem Details error responses
-and structured JSON request logging. Integration tests verify validation,
-missing-resource, conflict, unexpected-failure, and successful-request paths.
+The API foundation also provides standardized Problem Details error responses,
+structured JSON request logging, and liveness and PostgreSQL readiness checks.
+Integration tests verify validation, missing-resource, conflict,
+unexpected-failure, successful-request, and health-check paths.
 
 PostgreSQL 18.6 now runs locally through Docker Compose. Flyway applies and
 validates versioned SQL migrations, and a relational smoke test verifies the
-resulting database state. Authentication, health endpoints, runtime persistence
-behavior, and product modules remain planned. The Database CI job is configured
-on the current feature branch but is not described as verified until its pull
-request run succeeds.
+resulting database state. Authentication, runtime persistence behavior, and
+product modules remain planned. The Database CI job is configured on the
+current feature branch but is not described as verified until its pull-request
+run succeeds.
 
 ## Supported Development Environment
 
@@ -201,10 +202,35 @@ database name, username, or password, run `docker compose down -v` and then
 `docker compose up -d`. This removes the local PostgreSQL volume and all its
 data.
 
-The API does not yet connect to PostgreSQL because no application entity or
-runtime persistence use case exists. When one is introduced, keep its local
-connection string in .NET user secrets or environment variables, never in a
-tracked settings file.
+The API uses PostgreSQL only for the readiness check; product persistence has
+not been introduced. Keep the local connection string in .NET user secrets or
+environment variables, never in a tracked settings file. For example, replace
+the placeholders with the local values from `.env`:
+
+```powershell
+dotnet user-secrets set "ConnectionStrings:PlatformDatabase" "Host=localhost;Port=5432;Database=your_database;Username=your_user;Password=your_password" --project backend\DevOpsPlatformHub\DevOpsPlatformHub.Api
+```
+
+## Health-Check Verification
+
+Start PostgreSQL and the API, then run these commands from a second PowerShell
+window:
+
+```powershell
+Invoke-WebRequest http://localhost:5164/health/live
+Invoke-WebRequest http://localhost:5164/health/ready
+
+docker compose stop postgres
+Invoke-WebRequest http://localhost:5164/health/live
+Invoke-WebRequest http://localhost:5164/health/ready
+
+docker compose start postgres
+Invoke-WebRequest http://localhost:5164/health/ready
+```
+
+The expected status sequence is `200`, `200`, `200`, `503`, `200`. Restart the
+API after changing source code or connection configuration; a normal
+`dotnet run` process does not reload compiled changes automatically.
 
 ## Configuration and Secrets
 
@@ -230,8 +256,7 @@ For each introduced component, verification should eventually cover:
 - Automated tests.
 - Database startup and connectivity where applicable.
 - Migration application where applicable.
-- Backend startup and HTTP responses; health responses when their implementing
-  issue is completed.
+- Backend startup, HTTP responses, and liveness/readiness responses.
 - Frontend startup and browser access.
 - Clear failure guidance for common setup problems.
 
@@ -270,6 +295,10 @@ The current backend foundation has been verified on Windows with PowerShell:
   migration.
 - The PostgreSQL relational smoke test completes successfully and rolls back
   its temporary test data.
+- The integration suite verifies liveness when PostgreSQL is unavailable,
+  readiness when PostgreSQL is unavailable, readiness with PostgreSQL
+  available, safe health responses, and exclusion of health probes from access
+  logs.
 
 These results verify the current developer machine and branch. Clean-checkout
 reproduction and CI verification remain pending.

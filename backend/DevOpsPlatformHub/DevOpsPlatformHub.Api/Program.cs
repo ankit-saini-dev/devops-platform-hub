@@ -10,6 +10,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.ConfigureRequestPipeline();
+app.ConfigureApplication();
 
 app.Run();

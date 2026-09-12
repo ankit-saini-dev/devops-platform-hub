@@ -1,4 +1,5 @@
 ﻿using DevOpsPlatformHub.Application.Exceptions;
+using DevOpsPlatformHub.Infrastructure.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,12 +18,9 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred.", "unexpected_error")
         };
 
-        logger.LogError(
-            "Request failed with {ErrorCode}. ExceptionType: {ExceptionType}. ExceptionStackTrace: {ExceptionStackTrace}. TraceId: {TraceId}",
-            errorCode,
-            exception.GetType().FullName,
-            exception.StackTrace,
-            httpContext.TraceIdentifier);
+        var exceptionDetails = LogSanitizer.SanitizeException(exception);
+        logger.LogError("Request failed with {ErrorCode}. ExceptionDetails: {ExceptionDetails}. TraceId: {TraceId}",
+            errorCode, exceptionDetails, httpContext.TraceIdentifier);
 
         var problemDetails = exception is ValidationFailureException validationFailureException
             ? new ValidationProblemDetails(new Dictionary<string, string[]>(validationFailureException.Errors))
