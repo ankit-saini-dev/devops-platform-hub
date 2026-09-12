@@ -1,4 +1,6 @@
-﻿namespace DevOpsPlatformHub.Api.Extension;
+﻿using DevOpsPlatformHub.Api.ErrorHandling;
+
+namespace DevOpsPlatformHub.Api.Extension;
 
 public static class ServicesExtension
 {
@@ -13,6 +15,8 @@ public static class ServicesExtension
         {
             services.AddOpenApi();
             services.AddControllers();
+            services.AddProblemDetails();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
         }
     }
 }
