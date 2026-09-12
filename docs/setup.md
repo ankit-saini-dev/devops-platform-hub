@@ -7,6 +7,10 @@ backend host, modular backend project structure, startup smoke test, Angular
 Material frontend foundation, and initial backend/frontend CI checks are in
 place.
 
+The API foundation also provides standardized Problem Details error responses
+and structured JSON request logging. Integration tests verify validation,
+missing-resource, conflict, unexpected-failure, and successful-request paths.
+
 PostgreSQL 18.6 now runs locally through Docker Compose. Flyway applies and
 validates versioned SQL migrations, and a relational smoke test verifies the
 resulting database state. Authentication, health endpoints, runtime persistence
@@ -125,10 +129,10 @@ backend/
   infrastructure tests and currently contains the startup smoke test.
 
 The unit-test project currently contains no tests because no business rules have
-been introduced. The integration-test project contains one startup smoke test.
-It starts the assembled API in memory with `WebApplicationFactory<Program>` and
-verifies that `/openapi/v1.json` returns HTTP `200` with the `application/json`
-media type.
+been introduced. The integration-test project contains the startup smoke test
+and shared API-behavior tests. It verifies that `/openapi/v1.json` returns HTTP
+`200` with the `application/json` media type, and that the error and logging
+pipeline produces safe, consistent results.
 
 ## Backend Commands
 
@@ -253,6 +257,12 @@ The current backend foundation has been verified on Windows with PowerShell:
 - The integration suite runs one startup smoke test, which starts the API in
   memory and verifies `/openapi/v1.json` returns HTTP `200` with the
   `application/json` media type.
+- The integration suite verifies `400`, `404`, `409`, and `500` Problem Details
+  responses for the shared error pipeline.
+- A controlled unexpected failure returns a safe `500` response without
+  returning its exception type or secret-like test value to the client.
+- Successful requests produce structured request logs with method, route path,
+  status code, duration, and trace ID, and are not logged as errors.
 - The unit-test project reports that no tests are available because business
   logic has not yet been introduced; no unit-test coverage is claimed.
 - Docker Compose starts a healthy PostgreSQL 18.6 development container.
@@ -286,6 +296,7 @@ connection strings.
 ## Related Documentation
 
 - [Project overview](../README.md)
+- [API conventions](api.md)
 - [Architecture](architecture.md)
 - [Roadmap](roadmap.md)
 - [Architecture decisions](decisions)

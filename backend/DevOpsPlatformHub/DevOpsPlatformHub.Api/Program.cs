@@ -10,7 +10,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-app.MapControllers();
+app.ConfigureRequestPipeline();
 
 app.Run();

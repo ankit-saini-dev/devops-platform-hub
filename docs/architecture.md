@@ -9,10 +9,12 @@ technologies described here remain the accepted architectural direction and
 planned implementation unless they are explicitly marked as implemented.
 
 The initial ASP.NET Core Web API host, backend solution, .NET SDK policy, and
-unit and integration test projects have been introduced during Phase 1. The
-integration-test project contains a startup smoke test that boots the assembled
-API in memory and verifies the development OpenAPI document can be served as
-JSON. The unit-test project remains empty because no business rules exist yet.
+unit and integration test projects have been introduced during Phase 1. Shared
+API error handling produces safe Problem Details responses for expected and
+unexpected failures, while request logging records structured request context.
+The integration-test project verifies the startup document, error mappings, and
+structured request logging in memory. The unit-test project remains empty
+because no business rules exist yet.
 
 The frontend foundation branch contains a standalone Angular application under
 `ui/devops-platform-hub-ui`. Its root component composes a Material toolbar,
@@ -166,6 +168,9 @@ justifies them.
 - Applies authorization policies before protected operations are executed.
 - Returns consistent HTTP responses without exposing internal exceptions,
   credentials, or sensitive configuration.
+- Maps application failures to documented HTTP Problem Details responses.
+- Logs request method, route path, status code, duration, and trace ID without
+  logging request bodies, headers, query strings, or response bodies.
 
 Controllers should remain thin. They may coordinate request and response
 concerns but should not contain business rules.
@@ -228,9 +233,10 @@ A typical synchronous request will follow this path:
 6. The transaction is committed when the operation succeeds.
 7. The API returns an appropriate response for Angular to display.
 
-Validation failures, missing resources, conflicts, and unexpected errors should
-produce consistent responses. Internal exceptions and sensitive details must
-not be returned to clients.
+Validation failures, missing resources, conflicts, and unexpected errors use a
+shared Problem Details response contract. Each response includes a safe error
+code and trace ID. Internal exception details and sensitive values must not be
+returned to clients.
 
 ## Background Execution Flow
 
