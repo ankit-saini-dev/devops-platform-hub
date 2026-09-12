@@ -16,8 +16,8 @@ public sealed class RequestLoggingMiddleware(RequestDelegate next, ILogger<Reque
             stopwatch.Stop();
             logger.LogInformation(
                 "Http request completed. {RequestMethod} {RequestPath} {StatusCode} {ElapsedMilliseconds} {TraceId}",
-                httpContext.Request.Method,
-                httpContext.Request.Path,
+                LogValueSanitizer.Sanitize(httpContext.Request.Method),
+                LogValueSanitizer.Sanitize(httpContext.Request.Path),
                 httpContext.Response.StatusCode,
                 stopwatch.ElapsedMilliseconds,
                 httpContext.TraceIdentifier);
