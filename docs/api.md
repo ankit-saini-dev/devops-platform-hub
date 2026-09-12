@@ -44,7 +44,8 @@ Every request records these structured fields at information level:
 Failures also record the safe error code, exception type, stack-trace location,
 and trace ID at error level. The request logger must not record request or
 response bodies, headers, query strings, passwords, tokens, or connection
-strings.
+strings. It removes carriage-return and line-feed characters from request
+method and path values before logging them to prevent forged log entries.
 
 Console logs use JSON formatting so local and future centralized logging tools
 can query the named fields.
