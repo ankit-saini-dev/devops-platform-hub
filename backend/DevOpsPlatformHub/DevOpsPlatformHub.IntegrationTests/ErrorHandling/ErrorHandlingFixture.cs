@@ -1,11 +1,13 @@
 ﻿using DevOpsPlatformHub.Api.Extension;
 using DevOpsPlatformHub.Application.Exceptions;
+using DevOpsPlatformHub.IntegrationTests.Support;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace DevOpsPlatformHub.IntegrationTests;
+namespace DevOpsPlatformHub.IntegrationTests.ErrorHandling;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class ErrorHandlingFixture : IAsyncLifetime
@@ -18,11 +20,21 @@ public sealed class ErrorHandlingFixture : IAsyncLifetime
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
+        builder.Configuration.AddInMemoryCollection(
+            new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:PlatformDatabase"] =
+                    "Host=localhost;Port=5432;Database=not_used;Username=not_used;Password=not_used",
+                ["Authentication:Jwt:Issuer"] = "integration-tests",
+                ["Authentication:Jwt:Audience"] = "integration-tests-client",
+                ["Authentication:Jwt:IssuerSigningKey"] = new string('a', 64),
+                ["Authentication:Jwt:AccessTokenLifetimeMinutes"] = "10"
+            });
 
         builder.Logging.ClearProviders();
         builder.Logging.AddProvider(LogProvider);
 
-        builder.Services.ConfigureServices();
+        builder.Services.ConfigureServices(builder.Configuration);
 
         _application = builder.Build();
         _application.ConfigureApplication();

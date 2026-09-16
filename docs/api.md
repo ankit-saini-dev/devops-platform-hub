@@ -3,8 +3,30 @@
 ## Status
 
 The API foundation implements shared error handling, structured request logging,
-and health endpoints. Product endpoints, authentication, and API versioning
-remain planned.
+health endpoints, and local JWT authentication. Product-operation endpoints and
+API versioning remain planned.
+
+## Authentication Endpoints
+
+Authentication routes are unauthenticated unless noted otherwise. A successful
+registration also returns an access token, so the new user is signed in without
+submitting the same credentials a second time.
+
+| Endpoint | Access | Behavior |
+|---|---|---|
+| `POST /api/Authentication/register` | Anonymous | Creates an active `User` account and returns `201 Created` with an access token. |
+| `POST /api/Authentication/login` | Anonymous | Accepts a username or email identifier and returns `200 OK` with an access token when credentials are valid. Invalid credentials return `401 Unauthorized` without revealing which value failed. |
+| `GET /api/Authentication/currentUser` | Bearer token required | Returns the authenticated user's ID, username, name, and role claims. Missing or invalid tokens return `401 Unauthorized`. |
+
+Registration accepts `name`, `username`, `email`, and `password`. Usernames
+cannot contain `@`; login uses that distinction to select username or email
+lookup. Passwords require at least 8 characters. The server stores only a
+salted password hash.
+
+Access tokens are signed JWTs with issuer, audience, expiry, subject, name, and
+role claims. The current implementation issues 60-minute access tokens. Refresh
+tokens, password reset, email verification, and administrative role assignment
+are intentionally deferred until a concrete product requirement needs them.
 
 ## Error Responses
 

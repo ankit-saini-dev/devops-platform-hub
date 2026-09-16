@@ -19,6 +19,8 @@ public static class ApplicationBuilderExtension
             application.UseExceptionHandler();
             application.UseStatusCodePages();
             application.UseHttpsRedirection();
+            application.UseAuthentication();
+            application.UseAuthorization();
             application.MapControllers();
         }
 

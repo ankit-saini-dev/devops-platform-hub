@@ -47,9 +47,23 @@ jobs:
       - name: Build
         run: dotnet build DevOpsPlatformHub.slnx --no-restore
 
+      - name: Apply database migrations
+        run: |
+          docker run --rm --network host \
+            -v "$GITHUB_WORKSPACE/database/migrations:/flyway/sql:ro" \
+            -v "$GITHUB_WORKSPACE/database/flyway.conf:/flyway/conf/flyway.conf:ro" \
+            -e FLYWAY_URL="jdbc:postgresql://localhost:5432/devops_platform_hub" \
+            -e FLYWAY_USER="postgres" \
+            -e FLYWAY_PASSWORD="postgres" \
+            redgate/flyway:13.6 migrate
+
       - name: Test
         env:
           ConnectionStrings__PlatformDatabase: Host=localhost;Port=5432;Database=devops_platform_hub;Username=postgres;Password=postgres
+          Authentication__Jwt__Issuer: devops-platform-hub-ci
+          Authentication__Jwt__Audience: devops-platform-hub-ci
+          Authentication__Jwt__IssuerSigningKey: ci-test-signing-key-that-is-long-enough-for-hmac-sha256-validation
+          Authentication__Jwt__AccessTokenLifetimeMinutes: 10
         run: dotnet test DevOpsPlatformHub.slnx --no-build --no-restore
 
   frontend:

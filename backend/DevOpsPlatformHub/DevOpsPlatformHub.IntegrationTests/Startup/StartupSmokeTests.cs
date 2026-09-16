@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace DevOpsPlatformHub.IntegrationTests;
+namespace DevOpsPlatformHub.IntegrationTests.Startup;
 
 /// <summary>
 /// Verifies that the application starts successfully and exposes its baseline endpoints.

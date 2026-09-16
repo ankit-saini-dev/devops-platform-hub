@@ -11,8 +11,9 @@ observability.
 > Status: Phase 1 application foundation. The ASP.NET Core backend host,
 > modular backend project structure, Angular Material shell, initial CI checks,
 > local PostgreSQL/Flyway database foundation, shared API error and logging
-> behavior, and liveness and PostgreSQL readiness checks are implemented.
-> Product features have not started.
+> behavior, liveness and PostgreSQL readiness checks, and local JWT
+> authentication are implemented and verified locally. Product operations remain
+> planned.
 
 ## Why this project exists
 
@@ -116,8 +117,10 @@ backend/frontend CI checks are implemented. Local PostgreSQL 18.6 runs through
 Docker Compose; Flyway applies and validates versioned SQL migrations, and a
 PostgreSQL smoke test verifies the resulting schema. The API produces safe,
 consistent error responses, structured request logs, and separate liveness and
-PostgreSQL readiness endpoints. Authentication and product capabilities remain
-planned.
+PostgreSQL readiness endpoints. Local registration, login by username or
+email, JWT bearer authentication, and the protected current-user endpoint are
+verified locally with unit, integration, and Postman checks. Product operations
+remain planned.
 
 ## License
 
