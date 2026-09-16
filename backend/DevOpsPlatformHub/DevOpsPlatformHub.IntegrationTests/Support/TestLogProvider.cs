@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
-namespace DevOpsPlatformHub.IntegrationTests;
+namespace DevOpsPlatformHub.IntegrationTests.Support;
 
 public sealed class TestLogProvider : ILoggerProvider
 {

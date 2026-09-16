@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace DevOpsPlatformHub.IntegrationTests;
+namespace DevOpsPlatformHub.IntegrationTests.HealthChecks;
 
 /// <summary>
 /// Verifies the liveness and readiness endpoints against healthy and unavailable database states.

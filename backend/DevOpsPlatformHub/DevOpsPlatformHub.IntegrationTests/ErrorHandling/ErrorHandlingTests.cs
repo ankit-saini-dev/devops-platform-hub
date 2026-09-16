@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 
-namespace DevOpsPlatformHub.IntegrationTests;
+namespace DevOpsPlatformHub.IntegrationTests.ErrorHandling;
 
 /// <summary>
 /// Verifies the HTTP error responses and request logging produced by the test host's middleware pipeline.

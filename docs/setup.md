@@ -14,10 +14,11 @@ unexpected-failure, successful-request, and health-check paths.
 
 PostgreSQL 18.6 now runs locally through Docker Compose. Flyway applies and
 validates versioned SQL migrations, and a relational smoke test verifies the
-resulting database state. Authentication, runtime persistence behavior, and
-product modules remain planned. The Database CI job is configured on the
-current feature branch but is not described as verified until its pull-request
-run succeeds.
+resulting database state. Authentication now uses PostgreSQL runtime persistence
+for local registration and login, with JWT bearer tokens for protected API
+requests. Product modules remain planned. The Database CI job is configured on
+the current feature branch but is not described as verified until its
+pull-request run succeeds.
 
 ## Supported Development Environment
 
@@ -119,21 +120,20 @@ backend/
 - `DevOpsPlatformHub.slnx` groups the backend projects for restore, build, and
   test commands.
 - `DevOpsPlatformHub.Api` is the deployable ASP.NET Core Web API host.
-- `DevOpsPlatformHub.Application` will contain use cases and application
-  contracts.
-- `DevOpsPlatformHub.Domain` will contain entities, value objects, and domain
-  rules.
-- `DevOpsPlatformHub.Infrastructure` contains runtime technical integrations,
-  including the selected PostgreSQL EF Core provider for future data access.
-- `DevOpsPlatformHub.UnitTests` is reserved for isolated business-rule tests.
-- `DevOpsPlatformHub.IntegrationTests` is reserved for assembled API and
-  infrastructure tests and currently contains the startup smoke test.
+- `DevOpsPlatformHub.Application` contains authentication contracts and request
+  validation.
+- `DevOpsPlatformHub.Domain` contains the user, role, and user-role entities.
+- `DevOpsPlatformHub.Infrastructure` contains PostgreSQL EF Core persistence,
+  password hashing, and JWT token issuance.
+- `DevOpsPlatformHub.UnitTests` contains isolated authentication service and
+  JWT tests.
+- `DevOpsPlatformHub.IntegrationTests` contains assembled API, infrastructure,
+  health, error-handling, startup, and authentication endpoint tests.
 
-The unit-test project currently contains no tests because no business rules have
-been introduced. The integration-test project contains the startup smoke test
-and shared API-behavior tests. It verifies that `/openapi/v1.json` returns HTTP
-`200` with the `application/json` media type, and that the error and logging
-pipeline produces safe, consistent results.
+The integration suite requires the local PostgreSQL container and applied Flyway
+migrations. It verifies registration, login by username and email, duplicate
+registration conflict handling, and protected current-user access in addition
+to the existing startup, health, error-handling, and logging behavior.
 
 ## Backend Commands
 
@@ -202,13 +202,24 @@ database name, username, or password, run `docker compose down -v` and then
 `docker compose up -d`. This removes the local PostgreSQL volume and all its
 data.
 
-The API uses PostgreSQL only for the readiness check; product persistence has
-not been introduced. Keep the local connection string in .NET user secrets or
-environment variables, never in a tracked settings file. For example, replace
-the placeholders with the local values from `.env`:
+Keep the local connection string and JWT signing key in .NET user secrets or
+environment variables, never in a tracked settings file. Set the connection
+string from the local `.env` values:
 
 ```powershell
 dotnet user-secrets set "ConnectionStrings:PlatformDatabase" "Host=localhost;Port=5432;Database=your_database;Username=your_user;Password=your_password" --project backend\DevOpsPlatformHub\DevOpsPlatformHub.Api
+```
+
+Create a local signing key once. This command does not print the generated key:
+
+```powershell
+$keyBytes = [byte[]]::new(64)
+$randomNumberGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$randomNumberGenerator.GetBytes($keyBytes)
+$randomNumberGenerator.Dispose()
+$jwtSigningKey = [Convert]::ToBase64String($keyBytes)
+dotnet user-secrets set "Authentication:Jwt:IssuerSigningKey" $jwtSigningKey --project backend\DevOpsPlatformHub\DevOpsPlatformHub.Api
+Remove-Variable keyBytes, jwtSigningKey, randomNumberGenerator
 ```
 
 ## Health-Check Verification
@@ -274,8 +285,8 @@ The current backend foundation has been verified on Windows with PowerShell:
 - The API starts on `http://localhost:5164`.
 - `GET /openapi/v1.json` returns HTTP `200` with an OpenAPI `3.1.1` JSON
   document.
-- The OpenAPI document contains no product paths because no product endpoint is
-  implemented.
+- The OpenAPI document contains authentication endpoints for registration,
+  login, and the protected current-user response.
 - Stopping the API releases the HTTP port.
 - `dotnet test DevOpsPlatformHub.slnx --no-build --no-restore` completes
   successfully.
@@ -288,8 +299,8 @@ The current backend foundation has been verified on Windows with PowerShell:
   returning its exception type or secret-like test value to the client.
 - Successful requests produce structured request logs with method, route path,
   status code, duration, and trace ID, and are not logged as errors.
-- The unit-test project reports that no tests are available because business
-  logic has not yet been introduced; no unit-test coverage is claimed.
+- The unit-test suite verifies registration password hashing, duplicate-user
+  handling, username/email login, incorrect-password rejection, and JWT claims.
 - Docker Compose starts a healthy PostgreSQL 18.6 development container.
 - Flyway successfully applies and validates the initial `platform` schema
   migration.
@@ -299,6 +310,8 @@ The current backend foundation has been verified on Windows with PowerShell:
   readiness when PostgreSQL is unavailable, readiness with PostgreSQL
   available, safe health responses, and exclusion of health probes from access
   logs.
+- Local Postman checks verify registration, automatic sign-in, username/email
+  login, and bearer-token access to the current-user endpoint.
 
 These results verify the current developer machine and branch. Clean-checkout
 reproduction and CI verification remain pending.

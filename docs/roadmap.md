@@ -130,6 +130,11 @@ features can be built.
   [#20](https://github.com/ankit-saini-dev/devops-platform-hub/pull/20). The
   API exposes liveness and PostgreSQL readiness checks, with automated and
   local Docker lifecycle verification.
+- Issue [#12](https://github.com/ankit-saini-dev/devops-platform-hub/issues/12)
+  is implemented and verified locally: registration, automatic sign-in,
+  username/email login, JWT bearer protection, PostgreSQL-backed identity
+  persistence, and unit and integration tests are complete. Its pull-request
+  CI verification and merge remain pending.
 
 ### Ordered Backlog
 

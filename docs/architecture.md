@@ -12,9 +12,10 @@ The initial ASP.NET Core Web API host, backend solution, .NET SDK policy, and
 unit and integration test projects have been introduced during Phase 1. Shared
 API error handling produces safe Problem Details responses for expected and
 unexpected failures, while request logging records structured request context.
-The integration-test project verifies the startup document, error mappings, and
-structured request logging in memory. The unit-test project remains empty
-because no business rules exist yet.
+Local authentication uses PostgreSQL-backed users and roles, ASP.NET Core
+password hashing, and JWT bearer tokens. Unit tests verify authentication
+business behavior; integration tests verify the assembled HTTP flow against
+the Flyway-created PostgreSQL schema.
 
 The frontend foundation branch contains a standalone Angular application under
 `ui/devops-platform-hub-ui`. Its root component composes a Material toolbar,
@@ -23,13 +24,11 @@ The route list is empty. Material supplies the Azure/Blue theme and components;
 SCSS supplies application layout. ESLint checks TypeScript and templates, and
 Prettier formats source files. This shell does not yet communicate with the API.
 
-Feature modules, runtime persistence behavior, background execution,
-authentication, and product endpoints remain planned. The API exposes liveness
-and PostgreSQL readiness endpoints. The local PostgreSQL and Flyway foundation
-is implemented: versioned SQL owns schema changes, while Entity Framework Core
-is reserved for future application data access. The readiness check is the only
-current runtime PostgreSQL use; it verifies connectivity without introducing
-entities or persistence behavior.
+Feature modules, background execution, and product-operation endpoints remain
+planned. The API exposes liveness and PostgreSQL readiness endpoints. The local
+PostgreSQL and Flyway foundation is implemented: versioned SQL owns schema
+changes, while Entity Framework Core performs runtime reads and writes for the
+implemented identity data. .NET and EF Core migrations are not used.
 
 This document will evolve as requirements and architectural assumptions are
 validated through verified implementation evidence.
@@ -109,9 +108,11 @@ implemented or independently deployed services.
 
 ### Identity and Access
 
-Authenticates users and authorizes protected operations. It will own user,
-role, and permission concepts needed by the application. Authorization will be
-enforced by the backend even when the frontend also hides unavailable actions.
+Owns user and role concepts. The implemented local flow supports self-
+registration with the `User` role, login by username or email, password-hash
+verification, JWT issuance, and bearer-token enforcement on the current-user
+endpoint. Authorization will continue to be enforced by the backend when
+future operations require role-specific permissions.
 
 ### Projects
 
