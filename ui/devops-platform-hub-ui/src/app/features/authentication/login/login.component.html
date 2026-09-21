@@ -1,0 +1,57 @@
+<main class="authentication-page authentication-page--login">
+  <app-authentication-background />
+
+  <mat-card class="authentication-card" aria-labelledby="login-heading">
+    <header class="authentication-card__header">
+      <p class="brand">
+        <span class="brand__primary">DevOps</span>
+        <span class="brand__secondary"> Platform</span>
+      </p>
+      <h1 id="login-heading">Welcome back</h1>
+      <p class="subtitle">Sign in to continue</p>
+    </header>
+
+    <form class="authentication-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+      <mat-form-field appearance="outline" hideRequiredMarker subscriptSizing="dynamic">
+        <mat-label>Username or email</mat-label>
+        <mat-icon class="input-icon" aria-hidden="true" fontSet="material-symbols-outlined" matPrefix>person</mat-icon>
+        <input matInput autocomplete="username" formControlName="identifier" id="identifier" type="text" />
+        @if (loginForm.controls.identifier.touched && loginForm.controls.identifier.hasError('required')) {
+          <mat-error>Enter your username or email</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" hideRequiredMarker subscriptSizing="dynamic">
+        <mat-label>Password</mat-label>
+        <mat-icon class="input-icon" aria-hidden="true" fontSet="material-symbols-outlined" matPrefix>lock</mat-icon>
+        <input matInput autocomplete="current-password" formControlName="password" id="password" type="password" />
+        @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
+          <mat-error>Enter your password</mat-error>
+        }
+      </mat-form-field>
+
+      @if (submissionError()) {
+        <p class="form-status form-status--error" role="alert">
+          {{ submissionError() }}
+        </p>
+      }
+
+      @if (submissionSucceeded()) {
+        <p class="form-status form-status--success" aria-live="polite">Signed in as {{ currentUser()?.name }}.</p>
+      }
+
+      <button class="submit-button" mat-flat-button type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Signing in...
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+    <a class="register-button" mat-stroked-button routerLink="/auth/register">Create an account</a>
+    <p class="security-note">
+      <span class="security-note__indicator" aria-hidden="true"></span>
+      Secure local authentication
+    </p>
+  </mat-card>
+</main>

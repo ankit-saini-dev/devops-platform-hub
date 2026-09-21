@@ -1,0 +1,195 @@
+<svg class="network-scene" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 1680 944"
+     xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Defines the faint square grid repeated across the background. -->
+    <pattern id="network-grid" height="68" patternUnits="userSpaceOnUse" width="68">
+      <path class="grid-line" d="M 68 0 L 0 0 0 68" fill="none" />
+    </pattern>
+
+    <!-- Creates the glow used by selected active network nodes. -->
+    <filter id="blue-glow" height="300%" width="300%" x="-100%" y="-100%">
+      <feGaussianBlur result="blur" stdDeviation="5" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Focuses attention on the card without changing the edge detail. -->
+    <radialGradient id="card-vignette" cx="50%" cy="50%" r="50%" gradientTransform="translate(0 0.14) scale(1 0.72)">
+      <stop offset="0" stop-color="#03152b" stop-opacity="0.68" />
+      <stop offset="0.58" stop-color="#03152b" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#03152b" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Provides the deep navy base instead of relying on a transparent SVG background. -->
+  <rect class="scene-base" height="944" width="1680" />
+
+  <!-- Uses only the sparse engineering guides visible in the reference, not a uniform grid. -->
+  <g class="background-guides">
+    <path
+      d="M 110 0 V 944 M 205 0 V 944 M 377 0 V 944 M 496 0 V 944 M 757 0 V 944 M 866 0 V 944 M 1015 0 V 944 M 1179 0 V
+       944 M 1300 0 V 944 M 1410 0 V 944 M 1548 0 V 944"
+    />
+    <path
+      d="M 0 38 H 1680 M 0 108 H 1680 M 0 230 H 1680 M 0 333 H 1680 M 0 461 H 1680 M 0 513 H 1680 M 0 693 H 1680 M 0 790 H 1680" />
+  </g>
+
+  <!-- Traces each reference route from a node to another node or the canvas edge. -->
+  <g class="circuit-network">
+    <path
+      class="circuit-line circuit-line--foreground"
+      d="M 0 38 H 110 L 205 108 L 282 186 H 378 V 108 H 510 V 51 H 758 H 1015 H 1180 V 102 H 1300 V 208 H 1410"
+    />
+    <path class="circuit-line circuit-line--foreground"
+          d="M 110 0 V 38 M 0 139 L 110 230 H 205 V 325 H 315 L 378 377 V 423 H 1680" />
+    <path class="circuit-line circuit-line--distant" d="M 0 513 H 51 L 110 574 H 211 V 693 H 377 V 836 H 496" />
+    <path class="circuit-line circuit-line--distant" d="M 0 663 L 110 574" />
+    <path class="circuit-line circuit-line--distant" d="M 0 790 H 110 V 693 H 211 L 292 574 H 352" />
+    <path class="circuit-line circuit-line--distant" d="M 377 0 V 186 H 510 L 605 91" />
+    <path class="circuit-line circuit-line--foreground"
+          d="M 1180 102 H 1300 V 208 H 1410 L 1530 130 L 1621 64 H 1680" />
+    <path class="circuit-line circuit-line--foreground" d="M 1180 208 H 1300 V 296 H 1410 V 347 H 1548 V 646 H 1680" />
+    <path class="circuit-line circuit-line--foreground" d="M 1015 422 H 1180 V 542 H 1300 V 703 H 1484 H 1680" />
+    <path class="circuit-line circuit-line--distant" d="M 1015 581 H 1180 V 703 H 1300 H 1484" />
+    <path class="circuit-line circuit-line--distant" d="M 758 836 H 1015 V 865 H 1300 L 1410 804 H 1548 V 646 H 1680" />
+  </g>
+
+  <!-- Sends repeated rectangular signal packets only across complete circuit routes. -->
+  <g class="moving-nodes" filter="url(#blue-glow)">
+    <rect class="moving-signal" height="3" rx="1.5" width="12" x="-6" y="-1.5">
+      <animateMotion
+        dur="14s"
+        path="M 0 38 H 110 L 205 108 L 282 186 H 378 V 108 H 510 V 51 H 758 H 1015 H 1180 V 102 H 1300 V 208 H 1410"
+        repeatCount="indefinite"
+      />
+    </rect>
+    <rect class="moving-signal" height="3" rx="1.5" width="12" x="-6" y="-1.5">
+      <animateMotion
+        dur="9.9s"
+        path="M 0 139 L 110 230 H 205 V 325 H 315 L 378 377 V 423 H 558 M 1116 423 H 1680"
+        repeatCount="indefinite"
+      />
+    </rect>
+    <rect class="moving-signal" height="3" rx="1.5" width="12" x="-6" y="-1.5">
+      <animateMotion
+        begin="-4.95s"
+        dur="9.9s"
+        path="M 0 139 L 110 230 H 205 V 325 H 315 L 378 377 V 423 H 558 M 1116 423 H 1680"
+        repeatCount="indefinite"
+      />
+    </rect>
+    <rect class="moving-signal" height="3" rx="1.5" width="12" x="-6" y="-1.5">
+      <animateMotion dur="7.25s" path="M 1180 208 H 1300 V 296 H 1410 V 347 H 1548 V 646 H 1680"
+                     repeatCount="indefinite" />
+    </rect>
+    <rect class="moving-signal" height="3" rx="1.5" width="12" x="-6" y="-1.5">
+      <animateMotion begin="-5s" dur="7.8s" path="M 758 836 H 1015 V 865 H 1300 L 1410 804 H 1548 V 646 H 1680"
+                     repeatCount="indefinite" />
+    </rect>
+  </g>
+
+  <!-- Draws ordinary route intersections. -->
+  <g class="junctions">
+    <circle class="junction" cx="110" cy="38" r="6" />
+    <circle class="junction" cx="205" cy="108" r="6" />
+    <circle class="junction" cx="378" cy="186" r="6" />
+    <circle class="junction" cx="378" cy="108" r="5" />
+    <circle class="junction" cx="510" cy="51" r="6" />
+    <circle class="junction" cx="605" cy="91" r="5" />
+    <circle class="junction" cx="110" cy="574" r="6" />
+    <circle class="junction" cx="211" cy="641" r="6" />
+    <circle class="junction" cx="377" cy="836" r="6" />
+    <circle class="junction" cx="292" cy="574" r="5" />
+    <circle class="junction" cx="496" cy="836" r="5" />
+    <circle class="junction" cx="758" cy="51" r="5" />
+    <circle class="junction" cx="1015" cy="51" r="6" />
+    <circle class="junction" cx="1180" cy="102" r="6" />
+    <circle class="junction" cx="1300" cy="208" r="6" />
+    <circle class="junction" cx="1180" cy="208" r="6" />
+    <circle class="junction" cx="1300" cy="296" r="6" />
+    <circle class="junction" cx="1410" cy="347" r="5" />
+    <circle class="junction" cx="1548" cy="327" r="6" />
+    <circle class="junction" cx="1180" cy="542" r="6" />
+    <circle class="junction" cx="1300" cy="703" r="6" />
+    <circle class="junction" cx="1410" cy="804" r="5" />
+    <circle class="junction" cx="1015" cy="581" r="6" />
+    <circle class="junction" cx="1015" cy="422" r="5" />
+    <circle class="junction" cx="758" cy="836" r="5" />
+    <circle class="junction" cx="1015" cy="865" r="6" />
+  </g>
+
+  <!-- Highlights the glowing connection points in the reference design. -->
+  <g filter="url(#blue-glow)">
+    <circle class="active-junction" cx="211" cy="325" r="6" />
+    <circle class="active-junction" cx="1530" cy="130" r="5" />
+    <circle class="active-junction" cx="1548" cy="504" r="8" />
+    <circle class="active-junction" cx="1336" cy="703" r="5" />
+    <circle class="active-junction" cx="377" cy="836" r="5" />
+    <circle class="active-junction" cx="6" cy="663" r="5" />
+    <circle class="active-junction" cx="352" cy="574" r="5" />
+  </g>
+
+  <!-- Softens all routes directly behind the focal card. -->
+  <rect class="card-vignette" height="944" width="1680" />
+
+  <!-- Adds the dotted technical clusters used in the reference. -->
+  <g transform="translate(282 48)">
+    <circle class="cluster-dot" cx="0" cy="0" r="2" />
+    <circle class="cluster-dot" cx="18" cy="0" r="2" />
+    <circle class="cluster-dot" cx="36" cy="0" r="2" />
+    <circle class="cluster-dot" cx="54" cy="0" r="2" />
+    <circle class="cluster-dot" cx="72" cy="0" r="2" />
+    <circle class="cluster-dot" cx="0" cy="18" r="2" />
+    <circle class="cluster-dot" cx="36" cy="18" r="2" />
+    <circle class="cluster-dot" cx="72" cy="18" r="2" />
+    <circle class="cluster-dot" cx="0" cy="36" r="2" />
+    <circle class="cluster-dot" cx="18" cy="36" r="2" />
+    <circle class="cluster-dot" cx="36" cy="36" r="2" />
+    <circle class="cluster-dot" cx="54" cy="36" r="2" />
+    <circle class="cluster-dot" cx="72" cy="36" r="2" />
+  </g>
+
+  <!-- Adds the matching dot cluster on the right side. -->
+  <g transform="translate(1434 48)">
+    <circle class="cluster-dot" cx="0" cy="0" r="2" />
+    <circle class="cluster-dot" cx="18" cy="0" r="2" />
+    <circle class="cluster-dot" cx="36" cy="0" r="2" />
+    <circle class="cluster-dot" cx="54" cy="0" r="2" />
+    <circle class="cluster-dot" cx="0" cy="18" r="2" />
+    <circle class="cluster-dot" cx="36" cy="18" r="2" />
+    <circle class="cluster-dot" cx="54" cy="18" r="2" />
+    <circle class="cluster-dot" cx="0" cy="36" r="2" />
+    <circle class="cluster-dot" cx="18" cy="36" r="2" />
+    <circle class="cluster-dot" cx="36" cy="36" r="2" />
+    <circle class="cluster-dot" cx="54" cy="36" r="2" />
+  </g>
+
+  <!-- Draws a reusable server-node shape at the left of the scene. -->
+  <g transform="translate(110 230) scale(1.08)">
+    <circle class="server-node" r="27" />
+    <rect class="server-icon" height="7" rx="1" width="20" x="-10" y="-9" />
+    <rect class="server-icon" height="7" rx="1" width="20" x="-10" y="4" />
+    <circle class="server-light" cx="6" cy="-5.5" r="1.4" />
+    <circle class="server-light" cx="6" cy="7.5" r="1.4" />
+  </g>
+
+  <!-- Draws a server node at the upper-right connection point. -->
+  <g transform="translate(1410 208) scale(1.08)">
+    <circle class="server-node" r="27" />
+    <rect class="server-icon" height="7" rx="1" width="20" x="-10" y="-9" />
+    <rect class="server-icon" height="7" rx="1" width="20" x="-10" y="4" />
+    <circle class="server-light" cx="6" cy="-5.5" r="1.4" />
+    <circle class="server-light" cx="6" cy="7.5" r="1.4" />
+  </g>
+
+  <!-- Draws a server node at the lower-right connection point. -->
+  <g transform="translate(1484 703) scale(1.08)">
+    <circle class="server-node" r="27" />
+    <rect class="server-icon" height="7" rx="1" width="20" x="-10" y="-9" />
+    <rect class="server-icon" height="7" rx="1" width="20" x="-10" y="4" />
+    <circle class="server-light" cx="6" cy="-5.5" r="1.4" />
+    <circle class="server-light" cx="6" cy="7.5" r="1.4" />
+  </g>
+</svg>

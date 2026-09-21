@@ -104,6 +104,258 @@ PostgreSQL          Simulated providers initially
 The diagram represents planned logical responsibilities, not currently
 implemented or independently deployed services.
 
+## Repository Source Organization
+
+The repository separates deployable applications, database delivery, and
+documentation at the root. The backend solution and database files below are
+the agreed starting structure. A folder is created when it contains a real
+implementation; planned folders are not added as empty placeholders.
+
+### .NET backend solution
+
+```text
+backend/DevOpsPlatformHub/
+├── global.json                                  # .NET SDK selection
+├── DevOpsPlatformHub.slnx                       # Backend project list
+├── DevOpsPlatformHub.Api/                       # Deployable HTTP host
+│   ├── Constants/                               # API-only stable values
+│   ├── Contracts/                               # HTTP request and response types
+│   ├── Controllers/                             # Route-level endpoints
+│   ├── ErrorHandling/                           # Problem Details translation
+│   ├── Extension/                               # DI and pipeline registration
+│   ├── Logging/                                 # HTTP request logging
+│   ├── Properties/                              # Local launch profiles
+│   ├── Program.cs                               # Host entry point
+│   ├── appsettings.json                         # Tracked non-secret defaults
+│   ├── appsettings.Development.json             # Safe local overrides
+│   └── DevOpsPlatformHub.Api.csproj             # API dependencies and references
+├── DevOpsPlatformHub.Application/               # Use-case contracts and rules
+│   ├── <FeatureName>/                           # One real backend capability
+│   │   ├── Contracts/                           # Use-case models and interfaces
+│   │   └── Validations/                         # Feature request validation
+│   ├── Exceptions/                              # Expected application outcomes
+│   └── DevOpsPlatformHub.Application.csproj     # Application dependencies
+├── DevOpsPlatformHub.Domain/                    # Technology-independent business model
+│   ├── Constants/                               # Domain vocabulary
+│   ├── Entities/                                # Business entities
+│   └── DevOpsPlatformHub.Domain.csproj          # Domain dependencies
+├── DevOpsPlatformHub.Infrastructure/            # Technical implementations
+│   ├── <FeatureName>/                           # Feature technical adapters
+│   ├── HealthChecks/                            # Infrastructure health checks
+│   ├── Logging/                                 # Reusable log safety utilities
+│   ├── Persistence/                             # EF Core runtime data access
+│   │   ├── Configurations/                      # Entity-to-table mappings
+│   │   └── Repositories/                        # Feature persistence implementations
+│   └── DevOpsPlatformHub.Infrastructure.csproj  # Infrastructure dependencies
+├── DevOpsPlatformHub.UnitTests/                 # Isolated behavior tests
+│   ├── <FeatureName>/                           # Unit tests for one capability
+│   │   ├── Support/                             # Feature-only fakes
+│   │   └── <BehaviorGroup>/                     # Tests grouped when needed
+│   └── DevOpsPlatformHub.UnitTests.csproj       # Unit-test dependencies
+└── DevOpsPlatformHub.IntegrationTests/          # Assembled API behavior tests
+    ├── <FeatureName>/                           # Endpoint and feature tests
+    │   ├── Endpoints/                           # HTTP endpoint tests
+    │   └── Support/                             # Feature test-host utilities
+    ├── ErrorHandling/                           # Error pipeline behavior
+    ├── HealthChecks/                            # Liveness and readiness behavior
+    ├── Startup/                                 # Host startup behavior
+    ├── Support/                                 # Shared integration utilities
+    └── DevOpsPlatformHub.IntegrationTests.csproj # Integration-test dependencies
+```
+
+#### Solution files
+
+- `global.json` selects the .NET SDK feature band for developer machines and CI.
+- `DevOpsPlatformHub.slnx` lists every backend project used by restore, build,
+  and test commands. It contains no application behavior.
+- Each `*.csproj` defines one project's target framework, package dependencies,
+  and permitted project references. References express the dependency flow
+  `Api -> Infrastructure -> Application -> Domain`.
+
+#### `DevOpsPlatformHub.Api`
+
+This is the deployable ASP.NET Core HTTP host. It owns HTTP-only concerns and
+must not contain business rules or database queries.
+
+- `Program.cs` builds the host and applies the registered pipeline.
+- `appsettings.json` holds tracked non-secret defaults such as logging, JWT
+  issuer, and audience.
+- `appsettings.Development.json` holds safe development-only overrides. Local
+  connection strings and signing keys remain in User Secrets.
+- `Constants` contains API-only stable values such as route segments.
+- `Contracts` contains HTTP request or response types that do not belong in
+  Application.
+- `Controllers` contains thin route-level endpoints.
+- `ErrorHandling` contains global exception-to-Problem-Details translation.
+- `Extension` contains focused service-registration and request-pipeline
+  extension methods so `Program.cs` remains readable.
+- `Logging` contains HTTP request logging. It must never log request bodies,
+  passwords, tokens, or connection strings.
+- `Properties/launchSettings.json` contains local launch profiles, not
+  deployment configuration.
+
+#### `DevOpsPlatformHub.Application`
+
+This project contains feature contracts, use-case validation, and expected
+application exceptions. It must not depend on API, EF Core, PostgreSQL, or
+Angular.
+
+- `<FeatureName>/Contracts` contains feature request/result models and
+  interfaces implemented by Infrastructure.
+- `<FeatureName>/Validations` contains validation that protects the use case
+  regardless of its caller.
+- `Exceptions` contains expected validation, missing-resource, and conflict
+  outcomes for the API to translate safely.
+
+#### `DevOpsPlatformHub.Domain`
+
+This is the innermost project. It contains business concepts independent of
+database and HTTP technology.
+
+- `Entities` contains domain entities.
+- `Constants` contains stable domain vocabulary, such as role names. It must
+  not contain route or UI values.
+
+#### `DevOpsPlatformHub.Infrastructure`
+
+This project implements Application contracts using technical concerns such as
+PostgreSQL, password hashing, JWT creation, health checks, and log sanitizing.
+
+- `<FeatureName>` contains feature-specific technical implementations that do
+  not expose HTTP endpoints.
+- `HealthChecks` contains checks that depend on technical infrastructure.
+- `Logging` contains reusable technical log sanitization and safe exception
+  detail handling.
+- `Persistence/PlatformDbContext.cs` is the EF Core runtime mapping entry
+  point. It reads and writes the Flyway-owned schema; it never creates it.
+- `Persistence/Configurations` contains EF Core entity-to-table mappings.
+- `Persistence/Repositories` contains feature-specific persistence
+  implementations. Generic repositories and a generic unit of work remain out
+  of scope until a demonstrated need exists.
+
+#### Test projects
+
+- `DevOpsPlatformHub.UnitTests` contains fast isolated behavior tests using
+  fakes or in-memory collaborators; it does not need PostgreSQL.
+- `UnitTests/<FeatureName>` groups tests by feature. `Support` contains
+  feature-only fakes; subfolders such as `Services` or `Tokens` are created
+  only when several tests need them.
+- `DevOpsPlatformHub.IntegrationTests` contains assembled HTTP tests using the
+  API host and real infrastructure configuration.
+- `IntegrationTests/<FeatureName>` contains endpoint and feature-support tests.
+  `ErrorHandling`, `HealthChecks`, and `Startup` group cross-cutting observable
+  API behavior. Shared test-host utilities belong in `Support`.
+
+For every upcoming backend capability, use these placement rules only when the
+related code is needed:
+
+- Put HTTP routes and HTTP-only request or response types in `Api`.
+- Put feature contracts, use-case validation, and expected application outcomes
+  in `Application/<FeatureName>`.
+- Put business entities and domain vocabulary in `Domain`.
+- Put database mappings, repository implementations, token providers, health
+  checks, and other technical adapters in `Infrastructure`.
+- Put unit and integration tests under the matching behavior category and
+  feature name.
+
+The folder structure is a placement rule, not a reason to create empty folders
+or copy an existing feature as a template without a requirement.
+
+### Database delivery
+
+```text
+database/
+├── flyway.conf                                    # Non-secret Flyway configuration
+├── migrations/                                    # All deployable database changes
+│   ├── versioned/                                 # Immutable one-time changes
+│   │   └── VYYYYMMDDHHMMSSffffff__description.sql # Ordered schema or reference-data change
+│   └── repeatable/                                # Create only for changing definitions
+│       └── R__description.sql                     # Procedure, function, or view definition
+└── tests/                                         # Database-level verification SQL
+    └── postgresql_relational_smoke.sql            # Relational-constraint smoke test
+```
+
+#### Database configuration
+
+- `flyway.conf` is tracked non-secret Flyway configuration. It declares
+  migration locations and retry policy; credentials come from Compose, CI, or
+  another runtime environment.
+
+#### Versioned migrations
+
+- `migrations/versioned` contains immutable, ordered schema or reference-data
+  changes. Each migration runs once and Flyway records its checksum.
+- `VYYYYMMDDHHMMSSffffff__description.sql` is the required filename pattern.
+  Its timestamp provides ordering and its description explains the change.
+- Never edit a migration already applied outside a disposable local database.
+  Add a new migration to change the schema instead.
+
+#### Repeatable migrations
+
+- `migrations/repeatable` is created only when the application needs a
+  stored procedure, function, view, or another definition that should be
+  reapplied after its content changes.
+- `R__description.sql` is the repeatable filename pattern. Flyway reruns it
+  when its checksum changes.
+- The Flyway configuration gains the repeatable location when this directory
+  is first introduced. Do not create a separate procedure directory that
+  Flyway does not execute.
+
+#### Database verification
+
+- `tests` contains database-level verification SQL. Tests must roll back
+  temporary data and verify outcomes instead of duplicating one test file per
+  migration.
+- `postgresql_relational_smoke.sql` is the current relational-constraint and
+  rollback smoke test. Local verification and database CI run it after Flyway.
+
+Flyway owns all production DDL. EF Core owns only runtime reads and writes.
+Therefore, this project does not add EF Core migration files, `EnsureCreated`,
+or schema-creation code to the backend.
+
+When a real stored procedure, function, or view is required, define it as a
+Flyway migration so deployment remains reproducible. A changing definition is
+normally a repeatable migration named `R__description.sql`; the Flyway location
+configuration will be extended at that time. Do not maintain a separate
+stored-procedure directory that Flyway does not execute.
+
+### Angular source organization
+
+The Angular client uses feature-oriented source organization with `core` for
+cross-cutting application infrastructure and `shared` for reusable
+presentational components. Feature folders are added only when their product
+area begins; they are not placeholders for planned work.
+
+```text
+ui/devops-platform-hub-ui/src/app/
+├── core/                                         # Application-wide technical behavior
+│   ├── guards/                                   # Router navigation decisions
+│   ├── interceptors/                             # HttpClient request and response behavior
+│   ├── services/                                 # Global singleton technical services
+│   └── utils/                                    # Stateless cross-feature helpers
+├── shared/                                       # UI shared by multiple features
+├── features/                                     # Product capabilities
+│   └── <feature-name>/                           # One product capability
+│       ├── <routed-component>/                   # CLI-generated route component files
+│       ├── <feature-name>.models.ts              # Feature interfaces and types
+│       ├── <feature-name>.service.ts             # Feature API and state behavior
+│       └── <feature-name>.routes.ts              # Feature route definitions
+├── app.config.ts                                 # Application-wide Angular providers
+├── app.routes.ts                                 # Root route composition
+├── app.ts                                        # Root application component
+├── app.html                                      # Root application layout
+└── app.scss                                      # Root application layout styles
+```
+
+For every upcoming Angular feature, put route-level components, feature models,
+feature services, and feature routes in its own `features/<feature-name>`
+directory. Angular CLI-generated components keep their own folders because each
+component has TypeScript, HTML, SCSS, and test files. Other feature files remain
+directly under their feature directory until several related files justify a
+subfolder. `core` contains application-wide technical behavior and `shared`
+contains reusable presentational components; neither should contain
+feature-specific business UI.
+
 ## Backend Modules
 
 ### Identity and Access

@@ -1,0 +1,96 @@
+<main class="authentication-page authentication-page--register">
+  <app-authentication-background />
+
+  <mat-card class="authentication-card" aria-labelledby="register-heading">
+    <header class="authentication-card__header">
+      <p class="brand">
+        <span class="brand__primary">DevOps</span>
+        <span class="brand__secondary"> Platform</span>
+      </p>
+      <h1 id="register-heading">Create your account</h1>
+      <p class="subtitle">Start managing delivery workflows</p>
+    </header>
+
+    <form class="authentication-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="registration-fields">
+        <mat-form-field appearance="outline" hideRequiredMarker subscriptSizing="dynamic">
+          <mat-label>Full name</mat-label>
+          <mat-icon class="input-icon" aria-hidden="true" fontSet="material-symbols-outlined" matPrefix>person</mat-icon>
+          <input matInput autocomplete="name" formControlName="name" id="name" type="text" />
+          @if (registerForm.controls.name.touched && registerForm.controls.name.hasError('required')) {
+            <mat-error>Enter your name</mat-error>
+          }
+          @if (registerForm.controls.name.touched && registerForm.controls.name.hasError('maxlength')) {
+            <mat-error>Name must be 100 characters or fewer</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" hideRequiredMarker subscriptSizing="dynamic">
+          <mat-label>Username</mat-label>
+          <mat-icon class="input-icon" aria-hidden="true" fontSet="material-symbols-outlined" matPrefix>badge</mat-icon>
+          <input matInput autocomplete="username" formControlName="username" id="username" type="text" />
+          @if (registerForm.controls.username.touched && registerForm.controls.username.hasError('required')) {
+            <mat-error>Enter a username</mat-error>
+          }
+          @if (registerForm.controls.username.touched && registerForm.controls.username.hasError('maxlength')) {
+            <mat-error>Username must be 100 characters or fewer</mat-error>
+          }
+          @if (registerForm.controls.username.touched && registerForm.controls.username.hasError('pattern')) {
+            <mat-error>Username cannot contain @</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" hideRequiredMarker subscriptSizing="dynamic">
+          <mat-label>Email address</mat-label>
+          <mat-icon class="input-icon" aria-hidden="true" fontSet="material-symbols-outlined" matPrefix>mail</mat-icon>
+          <input matInput autocomplete="email" formControlName="email" id="email" type="email" />
+          @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('required')) {
+            <mat-error>Enter your email address</mat-error>
+          }
+          @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('email')) {
+            <mat-error>Enter a valid email address</mat-error>
+          }
+          @if (registerForm.controls.email.touched && registerForm.controls.email.hasError('maxlength')) {
+            <mat-error>Email must be 254 characters or fewer</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" hideRequiredMarker subscriptSizing="dynamic">
+          <mat-label>Password</mat-label>
+          <mat-icon class="input-icon" aria-hidden="true" fontSet="material-symbols-outlined" matPrefix>lock</mat-icon>
+          <input matInput autocomplete="new-password" formControlName="password" id="password" type="password" />
+          @if (registerForm.controls.password.touched && registerForm.controls.password.hasError('required')) {
+            <mat-error>Enter a password</mat-error>
+          }
+          @if (registerForm.controls.password.touched && registerForm.controls.password.hasError('minlength')) {
+            <mat-error>Password must contain at least 8 characters</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (submissionError()) {
+        <p class="form-status form-status--error" role="alert">
+          {{ submissionError() }}
+        </p>
+      }
+
+      @if (submissionSucceeded()) {
+        <p class="form-status form-status--success" aria-live="polite">Your account has been created and you are signed in.</p>
+      }
+
+      <button class="submit-button" mat-flat-button type="submit" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          Creating account...
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+
+    <a class="register-button" mat-stroked-button routerLink="/auth/login">Sign in</a>
+    <p class="security-note">
+      <span class="security-note__indicator" aria-hidden="true"></span>
+      Secure local authentication
+    </p>
+  </mat-card>
+</main>

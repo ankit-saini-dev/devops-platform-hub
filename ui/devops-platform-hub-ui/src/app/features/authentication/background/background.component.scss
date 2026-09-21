@@ -1,0 +1,149 @@
+// Positions the decorative component behind page content.
+:host {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+// Makes the SVG cover the entire authentication page.
+.network-scene {
+  display: block;
+  height: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  width: 100%;
+}
+
+// Defines the full navy background visible behind every circuit.
+.scene-base {
+  fill: #06172d;
+}
+
+// Fades decorative detail behind the authentication card to preserve focus.
+.card-vignette {
+  fill: url('#card-vignette');
+}
+
+// Keeps the sparse structural guides from competing with the circuit network.
+.background-guides {
+  fill: none;
+  stroke: rgb(64 145 219 / 13%);
+  stroke-width: 1;
+}
+
+// Styles the ordinary circuit routes.
+.circuit-line {
+  fill: none;
+  stroke: rgb(42 139 228 / 40%);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.25;
+}
+
+// Keeps the three primary network zones readable.
+.circuit-line--foreground {
+  stroke: rgb(42 139 228 / 48%);
+}
+
+// Pushes supporting routes farther into the visual background.
+.circuit-line--distant {
+  opacity: 0.42;
+  stroke-width: 1;
+}
+
+// Animates small bright segments on selected routes only.
+.circuit-line--signal {
+  animation: signal-flow 7s linear infinite;
+  stroke: rgb(74 194 255 / 88%);
+  stroke-dasharray: 7 210;
+}
+
+// Starts one signal later to avoid synchronized movement.
+.circuit-line--delayed {
+  animation-delay: -2.5s;
+}
+
+// Slows the longest signal route.
+.circuit-line--slow {
+  animation-duration: 10s;
+  animation-delay: -5s;
+}
+
+// Styles normal circuit intersections.
+.junction {
+  fill: #0e579b;
+}
+
+// Styles highlighted circuit intersections.
+.active-junction {
+  animation: junction-pulse 3.8s ease-in-out infinite;
+  fill: #44c7ff;
+}
+
+// Makes each animated packet a distinct bright signal on its complete route.
+.moving-signal {
+  fill: #44c7ff;
+}
+
+// Styles the small decorative dot clusters.
+.cluster-dot {
+  fill: rgb(59 159 239 / 58%);
+}
+
+// Styles the outer ring of each server node.
+.server-node {
+  fill: rgb(3 24 51 / 78%);
+  stroke: rgb(55 164 246 / 68%);
+  stroke-width: 2;
+}
+
+// Styles the two server-rack outlines inside a node.
+.server-icon {
+  fill: none;
+  stroke: rgb(66 180 255 / 86%);
+  stroke-width: 1.7;
+}
+
+// Styles the tiny server status lights.
+.server-light {
+  fill: #43c5ff;
+}
+
+// Moves bright route segments across their path.
+@keyframes signal-flow {
+  from {
+    stroke-dashoffset: 217;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+// Gives active nodes a low-frequency glow.
+@keyframes junction-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(1);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.35);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+}
+
+// Removes decorative motion when the user requests reduced motion.
+@media (prefers-reduced-motion: reduce) {
+  .circuit-line--signal,
+  .active-junction {
+    animation: none;
+  }
+}

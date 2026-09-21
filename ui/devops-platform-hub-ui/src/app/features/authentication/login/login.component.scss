@@ -1,0 +1,31 @@
+:host {
+  --authentication-page-overflow: hidden;
+  --authentication-page-padding: 1rem;
+  --authentication-card-margin-bottom: 1dvh;
+  --authentication-card-min-height: 34rem;
+  --authentication-card-padding: 2.25rem 2.5rem 2rem;
+  --authentication-field-height: 3.5rem;
+  --authentication-heading-size: 2.45rem;
+  --authentication-heading-margin-top: 1.5rem;
+  --authentication-form-margin-top: 2rem;
+  --authentication-button-height: 3.5rem;
+  --authentication-security-note-margin-top: 1.5rem;
+
+  display: block;
+}
+
+@media (max-width: 48rem) {
+  :host {
+    --authentication-card-margin-bottom: 0;
+    --authentication-card-min-height: 0;
+    --authentication-card-padding: 2.25rem 1.75rem;
+    --authentication-heading-size: clamp(2rem, 10vw, 2.45rem);
+    --authentication-security-note-margin-top: 1.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  :host {
+    --authentication-card-padding: 2.25rem 1.5rem;
+  }
+}

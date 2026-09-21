@@ -1,0 +1,43 @@
+:host {
+  --authentication-page-overflow: hidden;
+  --authentication-page-padding: 0.5rem 1rem;
+  --authentication-card-margin-bottom: 0;
+  --authentication-card-min-height: 0;
+  --authentication-card-padding: 1.5rem 2.5rem 1.25rem;
+  --authentication-field-height: 3rem;
+  --authentication-heading-size: 2rem;
+  --authentication-heading-margin-top: 1rem;
+  --authentication-form-margin-top: 1.25rem;
+  --authentication-button-height: 3rem;
+  --authentication-security-note-margin-top: 0.75rem;
+
+  display: block;
+}
+
+.input-icon {
+  transform: translateY(-0.25rem);
+}
+
+.registration-fields {
+  display: grid;
+  gap: clamp(0.75rem, 2.5dvh, 1.5rem);
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 48rem) {
+  :host {
+    --authentication-page-overflow: auto;
+    --authentication-card-padding: 1.25rem 1.75rem 1rem;
+    --authentication-heading-size: clamp(1.75rem, 8vw, 2rem);
+  }
+
+  .registration-fields {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  :host {
+    --authentication-card-padding: 1.25rem 1.5rem 1rem;
+  }
+}

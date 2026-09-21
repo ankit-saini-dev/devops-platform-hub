@@ -29,13 +29,37 @@ npm.cmd start
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Code scaffolding
+## Code scaffolding and selectors
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Feature component selectors use `app-<feature>-<component>`. For example, the
+authentication background component uses `app-authentication-background`. The
+feature name makes component ownership clear where it is embedded in another
+template and prevents generic selectors from becoming ambiguous as features
+grow.
+
+Angular CLI does not derive a selector prefix from the component directory. Run
+the generator with an explicit feature prefix. For example, to create a future
+password-reset component in the authentication feature:
 
 ```powershell
-npx.cmd ng generate component component-name
+npm.cmd exec ng generate component features/authentication/password-reset --prefix app-authentication
 ```
+
+This generates the files under the feature and the selector
+`app-authentication-password-reset`. Keep selector generation enabled; do not
+configure the component schematic with `skipSelector: true`. Routed components
+may not use their selector directly because the router renders them, but they
+still follow the same naming rule.
+
+## Angular API lifecycle
+
+Do not introduce Angular APIs that Angular has deprecated. Prefer supported
+Angular, Angular Material, and browser APIs. When a supported public API cannot
+produce a required Material visual detail, use a narrowly scoped global style
+selector only after documenting why it is needed; do not use `::ng-deep`.
+
+When Angular or Angular Material is upgraded, visually verify the affected
+screens and replace any API that has since become deprecated.
 
 For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
