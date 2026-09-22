@@ -129,24 +129,29 @@ backend/DevOpsPlatformHub/
 │   ├── appsettings.json                         # Tracked non-secret defaults
 │   ├── appsettings.Development.json             # Safe local overrides
 │   └── DevOpsPlatformHub.Api.csproj             # API dependencies and references
-├── DevOpsPlatformHub.Application/               # Use-case contracts and rules
-│   ├── <FeatureName>/                           # One real backend capability
-│   │   ├── Contracts/                           # Use-case models and interfaces
+├── DevOpsPlatformHub.Application/               # Feature workflows and business rules
+│   ├── <FeatureName>/                           # One real service capability
+│   │   ├── Contracts/                           # Service requests, results, and interfaces
 │   │   └── Validations/                         # Feature request validation
-│   ├── Exceptions/                              # Expected application outcomes
+│   ├── Exceptions/                              # Expected service outcomes
 │   └── DevOpsPlatformHub.Application.csproj     # Application dependencies
-├── DevOpsPlatformHub.Domain/                    # Technology-independent business model
-│   ├── Constants/                               # Domain vocabulary
+├── DevOpsPlatformHub.DataAccess/                # PostgreSQL and EF Core access
+│   ├── Contracts/                               # Repository contracts
+│   ├── Exceptions/                              # Database-specific failures
+│   ├── HealthChecks/                            # Database readiness checks
+│   ├── Repositories/                            # Query implementations
+│   └── DevOpsPlatformHub.DataAccess.csproj      # Database dependencies
+├── DevOpsPlatformHub.Contexts/                  # EF Core database mapping
+│   ├── Configurations/                          # Entity-to-table mappings
+│   ├── PlatformDbContext.cs                     # Runtime database context
+│   └── DevOpsPlatformHub.Contexts.csproj        # EF Core mapping dependencies
+├── DevOpsPlatformHub.Core/                      # Cross-cutting stable utilities
+│   ├── Constants/                               # Shared application vocabulary
+│   ├── Logging/                                 # Safe reusable log utilities
+│   └── DevOpsPlatformHub.Core.csproj            # Core dependencies
+├── DevOpsPlatformHub.Entities/                  # Business data model
 │   ├── Entities/                                # Business entities
-│   └── DevOpsPlatformHub.Domain.csproj          # Domain dependencies
-├── DevOpsPlatformHub.Infrastructure/            # Technical implementations
-│   ├── <FeatureName>/                           # Feature technical adapters
-│   ├── HealthChecks/                            # Infrastructure health checks
-│   ├── Logging/                                 # Reusable log safety utilities
-│   ├── Persistence/                             # EF Core runtime data access
-│   │   ├── Configurations/                      # Entity-to-table mappings
-│   │   └── Repositories/                        # Feature persistence implementations
-│   └── DevOpsPlatformHub.Infrastructure.csproj  # Infrastructure dependencies
+│   └── DevOpsPlatformHub.Entities.csproj        # Entity dependencies
 ├── DevOpsPlatformHub.UnitTests/                 # Isolated behavior tests
 │   ├── <FeatureName>/                           # Unit tests for one capability
 │   │   ├── Support/                             # Feature-only fakes
@@ -169,8 +174,11 @@ backend/DevOpsPlatformHub/
 - `DevOpsPlatformHub.slnx` lists every backend project used by restore, build,
   and test commands. It contains no application behavior.
 - Each `*.csproj` defines one project's target framework, package dependencies,
-  and permitted project references. References express the dependency flow
-  `Api -> Infrastructure -> Application -> Domain`.
+  and permitted project references. The runtime flow is
+  `Controller -> Application service -> Repository -> DbContext -> Entity`.
+  `Api` references `Application` and `DataAccess` so it can use application
+  contracts and register concrete persistence implementations in dependency
+  injection.
 
 #### `DevOpsPlatformHub.Api`
 
@@ -196,42 +204,52 @@ must not contain business rules or database queries.
 
 #### `DevOpsPlatformHub.Application`
 
-This project contains feature contracts, use-case validation, and expected
-application exceptions. It must not depend on API, EF Core, PostgreSQL, or
-Angular.
+This project contains the workflow for each feature. An application service validates its
+request, applies business rules, coordinates repositories, and returns a
+result to the controller.
 
-- `<FeatureName>/Contracts` contains feature request/result models and
-  interfaces implemented by Infrastructure.
-- `<FeatureName>/Validations` contains validation that protects the use case
-  regardless of its caller.
+- `<FeatureName>/Contracts` contains feature request/result models and service
+  interfaces used by controllers.
+- `<FeatureName>/Validations` contains request validation that protects the
+  workflow regardless of its caller.
 - `Exceptions` contains expected validation, missing-resource, and conflict
   outcomes for the API to translate safely.
+- `Authentication` currently contains registration, login, password hashing,
+  and JWT issuance because those form one authentication workflow.
 
-#### `DevOpsPlatformHub.Domain`
+#### `DevOpsPlatformHub.DataAccess`
 
-This is the innermost project. It contains business concepts independent of
-database and HTTP technology.
+This project owns PostgreSQL data-access work. Repositories contain database
+queries and persistence only; they do not decide whether a registration is
+valid or which role the new user receives.
 
-- `Entities` contains domain entities.
-- `Constants` contains stable domain vocabulary, such as role names. It must
-  not contain route or UI values.
+- `Contracts` contains repository contracts used by application workflows.
+- `Repositories` contains repository implementations.
+- `Exceptions` translates database-only failures that an application service
+  must handle, such as a database unique-constraint race.
+- `HealthChecks` contains checks for technical dependencies.
 
-#### `DevOpsPlatformHub.Infrastructure`
+#### `DevOpsPlatformHub.Contexts`
 
-This project implements Application contracts using technical concerns such as
-PostgreSQL, password hashing, JWT creation, health checks, and log sanitizing.
+This project owns the EF Core `PlatformDbContext` and the mapping configuration
+that lets EF Core read and write the Flyway-owned PostgreSQL schema. It does
+not create, alter, or migrate the schema.
 
-- `<FeatureName>` contains feature-specific technical implementations that do
-  not expose HTTP endpoints.
-- `HealthChecks` contains checks that depend on technical infrastructure.
-- `Logging` contains reusable technical log sanitization and safe exception
-  detail handling.
-- `Persistence/PlatformDbContext.cs` is the EF Core runtime mapping entry
-  point. It reads and writes the Flyway-owned schema; it never creates it.
-- `Persistence/Configurations` contains EF Core entity-to-table mappings.
-- `Persistence/Repositories` contains feature-specific persistence
-  implementations. Generic repositories and a generic unit of work remain out
-  of scope until a demonstrated need exists.
+- `PlatformDbContext.cs` exposes entity sets and applies the mapping assembly.
+- `Configurations` contains table, column, key, and relationship mappings.
+
+#### `DevOpsPlatformHub.Core`
+
+This project contains small cross-cutting, provider-neutral utilities shared by
+backend projects, such as role-name constants and log sanitization. It must not
+contain feature workflows, controller behavior, or database queries.
+
+#### `DevOpsPlatformHub.Entities`
+
+This project contains the data concepts shared by services and repositories.
+It must not contain controller behavior, EF Core queries, or HTTP types.
+
+- `Entities` contains business entities such as `User`, `Role`, and `UserRole`.
 
 #### Test projects
 
@@ -250,11 +268,13 @@ For every upcoming backend capability, use these placement rules only when the
 related code is needed:
 
 - Put HTTP routes and HTTP-only request or response types in `Api`.
-- Put feature contracts, use-case validation, and expected application outcomes
-  in `Application/<FeatureName>`.
-- Put business entities and domain vocabulary in `Domain`.
-- Put database mappings, repository implementations, token providers, health
-  checks, and other technical adapters in `Infrastructure`.
+- Put a feature's workflow, request/result models, validation, token work, and
+  expected outcomes in `Application/<FeatureName>`.
+- Put repository contracts, implementations, database failures, and readiness
+  checks in `DataAccess`.
+- Put `PlatformDbContext` and EF Core entity mappings in `Contexts`.
+- Put cross-cutting constants and log utilities in `Core`.
+- Put business entities in `Entities`.
 - Put unit and integration tests under the matching behavior category and
   feature name.
 

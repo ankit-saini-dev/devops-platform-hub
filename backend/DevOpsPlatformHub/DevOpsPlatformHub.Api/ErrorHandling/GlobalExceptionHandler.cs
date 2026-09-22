@@ -1,5 +1,5 @@
-﻿using DevOpsPlatformHub.Application.Exceptions;
-using DevOpsPlatformHub.Infrastructure.Logging;
+using DevOpsPlatformHub.Core.Exceptions;
+using DevOpsPlatformHub.Core.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 

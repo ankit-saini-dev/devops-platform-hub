@@ -1,8 +1,10 @@
-﻿using DevOpsPlatformHub.Application.Authentication.Contracts;
-using DevOpsPlatformHub.Application.Exceptions;
-using DevOpsPlatformHub.Domain.Constants;
-using DevOpsPlatformHub.Domain.Entities;
-using DevOpsPlatformHub.Infrastructure.Authentication;
+using DevOpsPlatformHub.Application.Authentication;
+using DevOpsPlatformHub.Application.Authentication.Contracts;
+using DevOpsPlatformHub.Application.Dtos.Authentication;
+using DevOpsPlatformHub.Application.Services;
+using DevOpsPlatformHub.Core.Constants;
+using DevOpsPlatformHub.Core.Exceptions;
+using DevOpsPlatformHub.Entities.Entities;
 using DevOpsPlatformHub.UnitTests.Authentication.Support;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;

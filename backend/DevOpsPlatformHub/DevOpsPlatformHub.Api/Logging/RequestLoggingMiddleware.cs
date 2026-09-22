@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using DevOpsPlatformHub.Infrastructure.Logging;
+using System.Diagnostics;
+using DevOpsPlatformHub.Core.Logging;
 
 namespace DevOpsPlatformHub.Api.Logging;
 

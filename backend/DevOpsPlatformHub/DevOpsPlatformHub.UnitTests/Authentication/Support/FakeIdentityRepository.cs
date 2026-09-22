@@ -1,9 +1,9 @@
-﻿using DevOpsPlatformHub.Application.Authentication.Contracts;
-using DevOpsPlatformHub.Domain.Entities;
+using DevOpsPlatformHub.DataAccess.Persistence.Repositories.Contracts;
+using DevOpsPlatformHub.Entities.Entities;
 
 namespace DevOpsPlatformHub.UnitTests.Authentication.Support;
 
-public class FakeIdentityRepository :  IIdentityRepository
+public class FakeIdentityRepository : IIdentityRepository
 {
     public List<User> Users { get; } = [];
     public List<Role> Roles { get; } = [];

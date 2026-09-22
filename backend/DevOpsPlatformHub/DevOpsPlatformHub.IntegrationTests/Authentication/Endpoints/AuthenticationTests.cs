@@ -1,8 +1,8 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using DevOpsPlatformHub.Api.Contracts;
 using DevOpsPlatformHub.Application.Authentication.Contracts;
+using DevOpsPlatformHub.Application.Dtos.Authentication;
 using DevOpsPlatformHub.IntegrationTests.Authentication.Support;
 
 namespace DevOpsPlatformHub.IntegrationTests.Authentication.Endpoints;

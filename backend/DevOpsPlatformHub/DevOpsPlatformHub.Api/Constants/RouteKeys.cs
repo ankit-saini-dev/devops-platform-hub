@@ -1,4 +1,4 @@
-﻿namespace DevOpsPlatformHub.Api.Constants;
+namespace DevOpsPlatformHub.Api.Constants;
 
 public static class RouteKeys
 {

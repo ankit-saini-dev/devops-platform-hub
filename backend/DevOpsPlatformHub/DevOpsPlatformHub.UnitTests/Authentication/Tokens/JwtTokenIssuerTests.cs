@@ -1,8 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using DevOpsPlatformHub.Domain.Constants;
-using DevOpsPlatformHub.Domain.Entities;
-using DevOpsPlatformHub.Infrastructure.Authentication;
+using DevOpsPlatformHub.Application.Authentication;
+using DevOpsPlatformHub.Application.Services;
+using DevOpsPlatformHub.Core.Constants;
+using DevOpsPlatformHub.Entities.Entities;
 using Microsoft.Extensions.Options;
 
 namespace DevOpsPlatformHub.UnitTests.Authentication.Tokens;

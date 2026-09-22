@@ -287,6 +287,9 @@ container workloads.
 - Add live execution updates with SignalR if polling has become a demonstrated
   usability or efficiency problem.
 - Define meaningful application and workflow metrics.
+- Adopt source-generated `LoggerMessageAttribute` methods for demonstrated
+  high-frequency logging paths, such as request middleware or background
+  processing, while preserving structured fields and log sanitization.
 - Introduce OpenTelemetry for selected traces, metrics, or logs when there are
   real flows to observe.
 - Introduce Prometheus and Grafana only for defined metrics and dashboards.

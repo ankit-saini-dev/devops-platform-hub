@@ -1,9 +1,9 @@
-﻿using System.Security.Claims;
-using DevOpsPlatformHub.Api.Contracts;
+using System.Security.Claims;
 using DevOpsPlatformHub.Application.Authentication.Contracts;
+using DevOpsPlatformHub.Application.Dtos.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using static DevOpsPlatformHub.Api.Constants.RouteKeys;
 using Microsoft.AspNetCore.Mvc;
+using static DevOpsPlatformHub.Api.Constants.RouteKeys;
 
 namespace DevOpsPlatformHub.Api.Controllers;
 

@@ -1,12 +1,14 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Text;
 using DevOpsPlatformHub.Api.ErrorHandling;
+using DevOpsPlatformHub.Application.Authentication;
 using DevOpsPlatformHub.Application.Authentication.Contracts;
-using DevOpsPlatformHub.Domain.Entities;
-using DevOpsPlatformHub.Infrastructure.Authentication;
-using DevOpsPlatformHub.Infrastructure.HealthChecks;
-using DevOpsPlatformHub.Infrastructure.Persistence;
-using DevOpsPlatformHub.Infrastructure.Persistence.Repositories;
+using DevOpsPlatformHub.Application.Services;
+using DevOpsPlatformHub.Contexts;
+using DevOpsPlatformHub.DataAccess.HealthChecks;
+using DevOpsPlatformHub.DataAccess.Persistence.Repositories.Contracts;
+using DevOpsPlatformHub.DataAccess.Repositories;
+using DevOpsPlatformHub.Entities.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +52,7 @@ public static class ServicesExtension
             services.AddDbContext<PlatformDbContext>(options => options.UseNpgsql(connectionString));
             services.AddScoped<IIdentityRepository, IdentityRepository>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            services.AddScoped<IPasswordHasher<User>,  PasswordHasher<User>>();
+            services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             services.AddSingleton<JwtTokenIssuer>();
         }
 

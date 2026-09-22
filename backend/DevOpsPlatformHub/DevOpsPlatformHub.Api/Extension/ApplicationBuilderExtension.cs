@@ -1,4 +1,4 @@
-﻿using DevOpsPlatformHub.Api.Logging;
+using DevOpsPlatformHub.Api.Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace DevOpsPlatformHub.Api.Extension;

@@ -19,7 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DevOpsPlatformHub.Infrastructure\DevOpsPlatformHub.Infrastructure.csproj" />
+        <ProjectReference Include="..\DevOpsPlatformHub.Application\DevOpsPlatformHub.Application.csproj" />
     </ItemGroup>
 
 </Project>

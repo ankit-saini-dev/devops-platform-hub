@@ -110,8 +110,10 @@ backend/
     |-- DevOpsPlatformHub.slnx
     |-- DevOpsPlatformHub.Api/
     |-- DevOpsPlatformHub.Application/
-    |-- DevOpsPlatformHub.Domain/
-    |-- DevOpsPlatformHub.Infrastructure/
+    |-- DevOpsPlatformHub.DataAccess/
+    |-- DevOpsPlatformHub.Contexts/
+    |-- DevOpsPlatformHub.Core/
+    |-- DevOpsPlatformHub.Entities/
     |-- DevOpsPlatformHub.UnitTests/
     `-- DevOpsPlatformHub.IntegrationTests/
 ```
@@ -120,11 +122,14 @@ backend/
 - `DevOpsPlatformHub.slnx` groups the backend projects for restore, build, and
   test commands.
 - `DevOpsPlatformHub.Api` is the deployable ASP.NET Core Web API host.
-- `DevOpsPlatformHub.Application` contains authentication contracts and request
-  validation.
-- `DevOpsPlatformHub.Domain` contains the user, role, and user-role entities.
-- `DevOpsPlatformHub.Infrastructure` contains PostgreSQL EF Core persistence,
-  password hashing, and JWT token issuance.
+- `DevOpsPlatformHub.Application` contains authentication workflows, request
+  validation, JWT issuance, and service contracts.
+- `DevOpsPlatformHub.DataAccess` contains PostgreSQL EF Core persistence and
+  repository implementations.
+- `DevOpsPlatformHub.Contexts` contains `PlatformDbContext` and the EF Core
+  entity mappings for the Flyway-owned schema.
+- `DevOpsPlatformHub.Core` contains cross-cutting constants and log utilities.
+- `DevOpsPlatformHub.Entities` contains the user, role, and user-role entities.
 - `DevOpsPlatformHub.UnitTests` contains isolated authentication service and
   JWT tests.
 - `DevOpsPlatformHub.IntegrationTests` contains assembled API, infrastructure,
