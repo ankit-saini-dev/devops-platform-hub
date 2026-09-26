@@ -1,5 +1,5 @@
-﻿using DevOpsPlatformHub.Api.ErrorHandling;
-using DevOpsPlatformHub.Infrastructure.HealthChecks;
+using DevOpsPlatformHub.Api.Exceptions;
+using DevOpsPlatformHub.DataAccess.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace DevOpsPlatformHub.Api.Extension;

@@ -10,11 +10,11 @@ planned implementation unless they are explicitly marked as implemented.
 
 The initial ASP.NET Core Web API host, backend solution, .NET SDK policy, and
 unit and integration test projects have been introduced during Phase 1. Shared
-API error handling produces safe Problem Details responses for expected and
-unexpected failures, while request logging records structured request context.
-The integration-test project verifies the startup document, error mappings, and
-structured request logging in memory. The unit-test project remains empty
-because no business rules exist yet.
+API error handling produces consistent responses for expected and unexpected
+failures, and the API exposes liveness and PostgreSQL readiness endpoints. The
+integration-test project verifies the startup document, error mappings, and
+health behavior. The unit-test project remains empty because no business rules
+exist yet.
 
 The frontend foundation branch contains a standalone Angular application under
 `ui/devops-platform-hub-ui`. Its root component composes a Material toolbar,
@@ -167,25 +167,24 @@ justifies them.
 - Validates request shape and translates HTTP concerns into application
   operations.
 - Applies authorization policies before protected operations are executed.
-- Returns consistent HTTP responses without exposing internal exceptions,
-  credentials, or sensitive configuration.
-- Maps application failures to documented HTTP Problem Details responses.
-- Logs request method, route path, status code, duration, and trace ID without
-  logging request bodies, headers, query strings, or response bodies.
+- Returns consistent HTTP responses. Production 500 responses use a safe
+  default message; Development includes exception detail for local debugging.
+- Maps handled failures to documented `ProblemDetails` responses.
 - Exposes `/health/live` for process liveness and `/health/ready` for
-  PostgreSQL readiness. Health probes are excluded from request-access logs.
+  PostgreSQL readiness.
 
 The API composition root registers the PostgreSQL readiness implementation. The
-implementation remains in Infrastructure because it depends on Npgsql and
-executes a database command. Missing or unavailable PostgreSQL is converted to
-a controlled readiness result rather than an unhandled API exception.
+implementation remains in DataAccess because it depends on Npgsql and executes
+a database command. Missing or unavailable PostgreSQL is converted to a
+controlled readiness result rather than an unhandled API exception.
 
 Controllers should remain thin. They may coordinate request and response
 concerns but should not contain business rules.
 
-### Application and domain modules
+### Application and business modules
 
-- Implement use cases and business rules.
+- Implement use cases and business rules. Application is the regular business
+  path that coordinates data access.
 - Validate allowed state transitions.
 - Define boundaries for persistence and external providers where needed.
 - Remain testable without depending on Angular or controller behavior.
@@ -242,9 +241,10 @@ A typical synchronous request will follow this path:
 7. The API returns an appropriate response for Angular to display.
 
 Validation failures, missing resources, conflicts, and unexpected errors use a
-shared Problem Details response contract. Each response includes a safe error
-code and trace ID. Internal exception details and sensitive values must not be
-returned to clients.
+shared `ProblemDetails` response contract. Handled 400, 404, 409, and 422
+responses include their handled message. Production 500 responses use the
+default message, while Development includes exception detail for local
+debugging.
 
 ## Background Execution Flow
 
@@ -271,11 +271,10 @@ updates provide a demonstrated usability benefit.
   components.
 - Modules communicate through explicit contracts and must not access another
   module's internal database implementation directly.
-- Infrastructure code may implement contracts defined by the application, but
-  domain behavior must not depend on provider SDKs.
-- Infrastructure may provide technical health checks and log-sanitization
-  utilities used by the API composition root. Those utilities must not contain
-  domain or product behavior.
+- DataAccess provides technical database access for Application and the
+  PostgreSQL health check registered by the API composition root.
+- Core may provide shared technical utilities such as log sanitization. Those
+  utilities must not contain domain or product behavior.
 - External provider responses must be translated into application-owned models.
 - Cross-module dependencies must be intentional and should not form cycles.
 - Shared code should contain genuinely common technical behavior, not become a

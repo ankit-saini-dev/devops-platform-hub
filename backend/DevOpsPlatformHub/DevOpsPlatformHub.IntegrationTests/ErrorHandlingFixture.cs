@@ -1,5 +1,5 @@
-﻿using DevOpsPlatformHub.Api.Extension;
-using DevOpsPlatformHub.Application.Exceptions;
+using DevOpsPlatformHub.Api.Extension;
+using DevOpsPlatformHub.Core.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -28,15 +28,12 @@ public sealed class ErrorHandlingFixture : IAsyncLifetime
         _application.ConfigureApplication();
 
         _application.MapGet("/test/success", () => Results.Ok());
-        _application.MapGet("/test/not-found", (Func<IResult>)(() => throw new ResourceNotFoundException()));
+        _application.MapGet("/test/not-found", (Func<IResult>)(() => throw new KeyNotFoundException()));
         _application.MapGet("/test/conflict", (Func<IResult>)(() => throw new ResourceConflictException()));
-        _application.MapPost("/test/validation", (Func<IResult>)(() =>
-                throw new ValidationFailureException(new Dictionary<string, string[]>
-                {
-                    ["name"] = ["Name is required."]
-                })));
+        _application.MapPost("/test/validation",
+            (Func<IResult>)(() => throw new InvalidOperationException("Validation failed.")));
         _application.MapGet("/test/unexpected",
-            (Func<IResult>)(() => throw new InvalidOperationException("Password=do-not-return-or-log-this-secret-value")));
+            (Func<IResult>)(() => throw new Exception("Password=do-not-return-or-log-this-secret-value")));
 
         await _application.StartAsync();
         HttpClient = _application.GetTestClient();

@@ -7,10 +7,9 @@ backend host, modular backend project structure, startup smoke test, Angular
 Material frontend foundation, and initial backend/frontend CI checks are in
 place.
 
-The API foundation also provides standardized Problem Details error responses,
-structured JSON request logging, and liveness and PostgreSQL readiness checks.
-Integration tests verify validation, missing-resource, conflict,
-unexpected-failure, successful-request, and health-check paths.
+The API foundation also provides shared error responses and liveness and
+PostgreSQL readiness checks. Integration tests verify validation,
+missing-resource, conflict, unexpected-failure, and health-check paths.
 
 PostgreSQL 18.6 now runs locally through Docker Compose. Flyway applies and
 validates versioned SQL migrations, and a relational smoke test verifies the
@@ -109,8 +108,10 @@ backend/
     |-- DevOpsPlatformHub.slnx
     |-- DevOpsPlatformHub.Api/
     |-- DevOpsPlatformHub.Application/
-    |-- DevOpsPlatformHub.Domain/
-    |-- DevOpsPlatformHub.Infrastructure/
+    |-- DevOpsPlatformHub.Context/
+    |-- DevOpsPlatformHub.Core/
+    |-- DevOpsPlatformHub.DataAccess/
+    |-- DevOpsPlatformHub.Entities/
     |-- DevOpsPlatformHub.UnitTests/
     `-- DevOpsPlatformHub.IntegrationTests/
 ```
@@ -119,12 +120,15 @@ backend/
 - `DevOpsPlatformHub.slnx` groups the backend projects for restore, build, and
   test commands.
 - `DevOpsPlatformHub.Api` is the deployable ASP.NET Core Web API host.
-- `DevOpsPlatformHub.Application` will contain use cases and application
-  contracts.
-- `DevOpsPlatformHub.Domain` will contain entities, value objects, and domain
-  rules.
-- `DevOpsPlatformHub.Infrastructure` contains runtime technical integrations,
-  including the selected PostgreSQL EF Core provider for future data access.
+- `DevOpsPlatformHub.Application` contains use cases and business logic. It
+  coordinates regular application data access through `DataAccess`.
+- `DevOpsPlatformHub.Context` contains persistence context concerns and
+  references the persisted entity types.
+- `DevOpsPlatformHub.Core` contains shared exceptions, DTOs, and logging
+  utilities.
+- `DevOpsPlatformHub.DataAccess` contains PostgreSQL/Npgsql technical access
+  and readiness-check implementation.
+- `DevOpsPlatformHub.Entities` contains persisted entity types.
 - `DevOpsPlatformHub.UnitTests` is reserved for isolated business-rule tests.
 - `DevOpsPlatformHub.IntegrationTests` is reserved for assembled API and
   infrastructure tests and currently contains the startup smoke test.
@@ -132,8 +136,8 @@ backend/
 The unit-test project currently contains no tests because no business rules have
 been introduced. The integration-test project contains the startup smoke test
 and shared API-behavior tests. It verifies that `/openapi/v1.json` returns HTTP
-`200` with the `application/json` media type, and that the error and logging
-pipeline produces safe, consistent results.
+`200` with the `application/json` media type, and that error and health-check
+behavior remains consistent.
 
 ## Backend Commands
 
@@ -282,12 +286,10 @@ The current backend foundation has been verified on Windows with PowerShell:
 - The integration suite runs one startup smoke test, which starts the API in
   memory and verifies `/openapi/v1.json` returns HTTP `200` with the
   `application/json` media type.
-- The integration suite verifies `400`, `404`, `409`, and `500` Problem Details
-  responses for the shared error pipeline.
+- The integration suite verifies `400`, `404`, `409`, `422`, and `500` shared
+  error responses.
 - A controlled unexpected failure returns a safe `500` response without
   returning its exception type or secret-like test value to the client.
-- Successful requests produce structured request logs with method, route path,
-  status code, duration, and trace ID, and are not logged as errors.
 - The unit-test project reports that no tests are available because business
   logic has not yet been introduced; no unit-test coverage is claimed.
 - Docker Compose starts a healthy PostgreSQL 18.6 development container.

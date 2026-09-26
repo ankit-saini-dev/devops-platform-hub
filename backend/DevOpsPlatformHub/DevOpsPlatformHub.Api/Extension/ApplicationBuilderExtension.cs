@@ -1,4 +1,3 @@
-﻿using DevOpsPlatformHub.Api.Logging;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace DevOpsPlatformHub.Api.Extension;
@@ -15,7 +14,6 @@ public static class ApplicationBuilderExtension
 
         private void ConfigureRequestPipeline()
         {
-            application.UseMiddleware<RequestLoggingMiddleware>();
             application.UseExceptionHandler();
             application.UseStatusCodePages();
             application.UseHttpsRedirection();

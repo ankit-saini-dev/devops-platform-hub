@@ -1,10 +1,11 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
+using DevOpsPlatformHub.Core.DTOs;
 
-namespace DevOpsPlatformHub.Infrastructure.Logging;
+namespace DevOpsPlatformHub.Core.Logging;
 
 public static partial class LogSanitizer
 {
-    private const int MaximumExceptionDepth = 5;
+    private const int MAXIMUM_EXCEPTION_DEPTH = 5;
     private static readonly Regex KeyValueSecretPattern = KeyValueSecretPatternRegex();
     private static readonly Regex AuthorizationSecretPattern = AuthorizationSecretPatternRegex();
     private static readonly Regex PostgreSqlUriSecretPattern = PostgreSqlUriSecretPatternRegex();
@@ -14,8 +15,13 @@ public static partial class LogSanitizer
     /// </summary>
     /// <param name="value">The value to sanitize.</param>
     /// <returns>The value without carriage-return or line-feed characters.</returns>
-    public static string SanitizeValue(string value)
+    public static string SanitizeValue(this string? value)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
         return value
             .Replace("\r", string.Empty)
             .Replace("\n", string.Empty);
@@ -28,7 +34,7 @@ public static partial class LogSanitizer
 
     private static ExceptionDetails CreateExceptionDetails(Exception exception, int depth)
     {
-        if (depth == MaximumExceptionDepth)
+        if (depth == MAXIMUM_EXCEPTION_DEPTH)
         {
             return new ExceptionDetails(
                 "ExceptionChainTruncated",
@@ -60,19 +66,13 @@ public static partial class LogSanitizer
             return null;
         }
 
-        var sanitizedText = SanitizeValue(text);
+        var sanitizedText = text.SanitizeValue();
         sanitizedText = KeyValueSecretPattern.Replace(sanitizedText, "$1$2[REDACTED]");
-        sanitizedText =  AuthorizationSecretPattern.Replace(sanitizedText, "Authorization$1[REDACTED]");
+        sanitizedText = AuthorizationSecretPattern.Replace(sanitizedText, "Authorization$1[REDACTED]");
         sanitizedText = PostgreSqlUriSecretPattern.Replace(sanitizedText, "$1[REDACTED]@");
 
         return sanitizedText;
     }
-
-    public sealed record ExceptionDetails(
-        string ExceptionType,
-        string Message,
-        string? StackTrace,
-        IReadOnlyList<ExceptionDetails> InnerExceptions);
 
     [GeneratedRegex(
         """(?i)\b(password|pwd|secret|token|api[-_]?key|access[-_]?token|refresh[-_]?token|client[-_]?secret)\b\s*(=|:)\s*("[^"]*"|'[^']*'|[^;,\s]+)""",
