@@ -1,4 +1,4 @@
-﻿namespace DevOpsPlatformHub.Core.DTOs;
+namespace DevOpsPlatformHub.Core.DTOs;
 
 public sealed record ExceptionDetails(
     string ExceptionType,

@@ -1,4 +1,4 @@
-﻿using DevOpsPlatformHub.Api.Exceptions;
+using DevOpsPlatformHub.Api.Exceptions;
 using DevOpsPlatformHub.DataAccess.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 

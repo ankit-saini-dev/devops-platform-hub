@@ -1,4 +1,4 @@
-﻿using DevOpsPlatformHub.Core.Logging;
+using DevOpsPlatformHub.Core.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;

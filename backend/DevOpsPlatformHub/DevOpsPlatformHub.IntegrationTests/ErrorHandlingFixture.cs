@@ -1,4 +1,4 @@
-﻿using DevOpsPlatformHub.Api.Extension;
+using DevOpsPlatformHub.Api.Extension;
 using DevOpsPlatformHub.Core.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

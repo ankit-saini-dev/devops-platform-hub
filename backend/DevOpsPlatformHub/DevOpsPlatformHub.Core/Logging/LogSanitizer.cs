@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using DevOpsPlatformHub.Core.DTOs;
 
 namespace DevOpsPlatformHub.Core.Logging;

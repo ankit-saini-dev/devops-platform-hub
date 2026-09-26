@@ -1,5 +1,4 @@
-﻿using DevOpsPlatformHub.Core.Exceptions;
-using Microsoft.AspNetCore.Mvc;
+using DevOpsPlatformHub.Core.Exceptions;
 
 namespace DevOpsPlatformHub.Api.Exceptions;
 

@@ -1,4 +1,4 @@
-﻿using DevOpsPlatformHub.Core.Logging;
+using DevOpsPlatformHub.Core.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
