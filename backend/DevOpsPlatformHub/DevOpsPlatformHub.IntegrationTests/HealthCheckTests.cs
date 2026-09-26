@@ -15,7 +15,7 @@ public sealed class HealthCheckTests(WebApplicationFactory<Program> factory) : I
     /// Uses an unreachable PostgreSQL port so the test can exercise database-unavailable behavior
     /// without exposing a real connection string in the response.
     /// </summary>
-    private const string UnavailableConnectionString = "Host=localhost;Port=1;Database=health_check_test;Username=test;Password=test";
+    private const string UNAVAILABLE_CONNECTION_STRING = "Host=localhost;Port=1;Database=health_check_test;Username=test;Password=test";
 
     /// <summary>
     /// Liveness remains successful when the PostgreSQL dependency is unavailable.
@@ -87,7 +87,7 @@ public sealed class HealthCheckTests(WebApplicationFactory<Program> factory) : I
                 configuration.AddInMemoryCollection(
                     new Dictionary<string, string?>
                     {
-                        ["ConnectionStrings:PlatformDatabase"] = UnavailableConnectionString
+                        ["ConnectionStrings:PlatformDatabase"] = UNAVAILABLE_CONNECTION_STRING
                     });
             });
         });

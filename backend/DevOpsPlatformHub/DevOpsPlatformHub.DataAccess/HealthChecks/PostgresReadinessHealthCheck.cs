@@ -1,10 +1,10 @@
-﻿using DevOpsPlatformHub.Infrastructure.Logging;
+﻿using DevOpsPlatformHub.Core.Logging;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace DevOpsPlatformHub.Infrastructure.HealthChecks;
+namespace DevOpsPlatformHub.DataAccess.HealthChecks;
 
 public sealed class PostgresReadinessHealthCheck(IConfiguration configuration, ILogger<PostgresReadinessHealthCheck> logger)
     : IHealthCheck
